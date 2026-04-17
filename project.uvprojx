@@ -685,6 +685,16 @@
               <FileType>1</FileType>
               <FilePath>.\User\animation_frames.c</FilePath>
             </File>
+            <File>
+              <FileName>test_framework.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\test_framework.c</FilePath>
+            </File>
+            <File>
+              <FileName>lvgl_animation.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User\lvgl_animation.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -884,6 +894,21 @@
               <FileName>bsp_bmp.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\BSP\bsp_bmp.c</FilePath>
+            </File>
+            <File>
+              <FileName>bmp_browser.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\BSP\bmp_browser.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\BSP\bsp_key.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\BSP\bsp_lcd.c</FilePath>
             </File>
           </Files>
         </Group>

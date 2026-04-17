@@ -258,7 +258,7 @@ void Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
 		return;
 	}
 	
-	/* 设置LCD Gram扫描方向为: 左下角->右上角（可根据需要注释掉）*/
+	/* 设置LCD Gram扫描方向为: 左下角->右上角*/
 //	ILI9341_GramScan (3);
 	
 	/* 在LCD上打开与图片大小相同的显示窗口 */
