@@ -126,9 +126,6 @@ int Screen_shot( uint16_t x, uint16_t y, uint16_t Width, uint16_t Height, uint8_
 	/* 按指定格式组合完整文件名，保存到tmp_name */
 	sprintf((char*)tmp_name, "0:%s.bmp", filename);
 	
-	/* 挂载SD卡文件系统（逻辑驱动器0）*/
-	f_mount(0, &bmpfs[0]);
-	
 	/* 创建新文件（如果文件已存在则失败）*/
 	bmpres = f_open( &bmpfsrc, (char*)tmp_name, FA_CREATE_NEW | FA_WRITE );
 	
@@ -144,7 +141,7 @@ int Screen_shot( uint16_t x, uint16_t y, uint16_t Width, uint16_t Height, uint8_
 		bmpres = f_write(&bmpfsrc, header, sizeof(unsigned char) * 54, &mybw);		
 		
 		/* 设置LCD扫描方向为：左上角->右下角（正常显示方向）*/
-		ILI9341_GramScan( 1 );
+		//ILI9341_GramScan( 1 );
 		
 		/* 计算每行需要填充的字节数（使行字节数为4的倍数）*/
 		ucAlign = Width % 4;
@@ -206,7 +203,6 @@ void Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
 	unsigned char tmp_name[20];     // 临时文件名缓冲区
 	sprintf((char*)tmp_name,"0:%s",pPath);  // 添加SD卡驱动号前缀"0:"，如"0:/11.bmp"
 	
-	f_mount(0, &bmpfs[0]);          // 挂载SD卡文件系统
 	BMP_DEBUG_PRINTF("file mount ok \r\n");    
 	
 	/* 打开BMP文件 */
@@ -242,6 +238,44 @@ void Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
 	else  // 文件打开失败
 	{
 		BMP_DEBUG_PRINTF("file open fail!\r\n");
+		switch(bmpres)
+		{
+			case FR_DISK_ERR:          // 1 
+				ILI9341_Clear(0,0,240,320, 0xF800); // ??
+				break;
+			
+			case FR_INT_ERR:           // 2 
+				ILI9341_Clear(0,0,240,320, 0xFFE0); 
+				break;
+			
+			case FR_NOT_READY:         // 4
+				ILI9341_Clear(0,0,240,320, 0x07E0); 
+				break;
+			
+			case FR_NO_FILE:           // 5 
+				ILI9341_Clear(0,0,240,320, 0x001F); 
+				break;
+			
+			case FR_NO_PATH:           // 6 ?????
+				ILI9341_Clear(0,0,240,320, 0x07FF); // ??
+				break;
+			
+			case FR_INVALID_NAME:      // 7 ?????
+				ILI9341_Clear(0,0,240,320, 0xF81F); // ??
+				break;
+			
+			case FR_DENIED:            // 9 ?????
+				ILI9341_Clear(0,0,240,320, 0xC618); // ??
+				break;
+			
+			case FR_INVALID_OBJECT:    // 13 ???????
+				ILI9341_Clear(0,0,240,320, 0x0000); // ??
+				break;
+			
+			default:                   // ????
+				ILI9341_Clear(0,0,240,320, 0xFFFF); // ??
+				break;
+				} 
 		return;
 	}    
 /*-------------------------------------------------------------------------------------------------------*/
@@ -252,14 +286,13 @@ void Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
 	/* 计算图片实际行字节数，必须是4的倍数（Windows BMP格式要求）*/
 	l_width = WIDTHBYTES(width * bitInfoHead.biBitCount);  // biBitCount: 每个像素的位数（24位真彩色为24）
 	
-	if(l_width > 960)  // 检查行缓冲区是否溢出（960字节对应320像素*24位）
+	if(l_width > 720)  // 检查行缓冲区是否溢出（720字节对应240像素*24位）
 	{
 		BMP_DEBUG_PRINTF("\n SORRY, PIC IS TOO BIG (<=320)\n");
 		return;
 	}
 	
-	/* 设置LCD Gram扫描方向为: 左下角->右上角*/
-//	ILI9341_GramScan (3);
+	ILI9341_GramScan (1);
 	
 	/* 在LCD上打开与图片大小相同的显示窗口 */
 	ILI9341_OpenWindow(usX, usY, width, height);

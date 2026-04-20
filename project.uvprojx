@@ -871,16 +871,6 @@
               <FilePath>.\BSP\bsp_usart.h</FilePath>
             </File>
             <File>
-              <FileName>bsp_xpt2046_lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\BSP\bsp_xpt2046_lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_xpt2046_lcd.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\BSP\bsp_xpt2046_lcd.h</FilePath>
-            </File>
-            <File>
               <FileName>bsp_sdfs_app.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\BSP\bsp_sdfs_app.c</FilePath>
@@ -909,6 +899,11 @@
               <FileName>bsp_lcd.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\BSP\bsp_lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_xpt2046_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\BSP\bsp_xpt2046_lcd.c</FilePath>
             </File>
           </Files>
         </Group>

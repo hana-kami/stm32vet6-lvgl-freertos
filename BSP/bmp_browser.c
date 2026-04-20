@@ -30,8 +30,7 @@ uint16_t BMP_Browser_GetTotalCount(void)
     FRESULT res;
     DIR dir;
     FILINFO fno;
-    uint16_t count = 0;
-    f_mount(0, &bmpfs1[0]); 
+    uint16_t count = 0; 
     res = f_opendir(&dir, "/");
     if(res != FR_OK) return 0;
     

@@ -12,17 +12,16 @@
  * - 包含图像头数据：否
  */
 
-/* 假设你有3帧动画示例（实际可以根据需要添加更多）*/
 
 /* 帧0 */
 extern const lv_img_dsc_t frame_0;
-/* 帧1 */
-extern const lv_img_dsc_t frame_1;
-/* 帧2 */
-extern const lv_img_dsc_t frame_2;
+// /* 帧1 */
+// extern const lv_img_dsc_t frame_1;
+// /* 帧2 */
+// extern const lv_img_dsc_t frame_2;
 
-/* 帧数组 */
-extern const lv_img_dsc_t* frames[];
+// /* 帧数组 */
+// extern const lv_img_dsc_t* frames[];
 
 /* 总帧数 */
 #define TOTAL_FRAMES 1

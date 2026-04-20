@@ -5,11 +5,12 @@
 #include "stm32f10x.h"
 #include "bsp_ili9341_lcd.h"
 
+
 /* ==================== 屏幕类型选择 ==================== */
 // 当前使用的屏幕类型
-#define LCD_TYPE_ILI9341    1   // ILI9341 屏幕 (240x320)
-#define LCD_TYPE_ST7789     2   // ST7789 屏幕 (240x240) - 预留
-#define LCD_TYPE_SSD1306    3   // SSD1306 OLED (128x64) - 预留
+#define LCD_TYPE_ILI9341          1   // ILI9341 屏幕 (240x320)
+#define LCD_TYPE_ILI9341_QSPI     2   // ILI9341 屏幕 (240x240) - QSPI接口
+#define LCD_TYPE_SSD1306          3   // SSD1306 OLED (128x64) - 预留
 
 // 修改这里来切换屏幕类型
 #define CURRENT_LCD_TYPE    LCD_TYPE_ILI9341
@@ -20,8 +21,8 @@
     #define LCD_HEIGHT      320
     #define LCD_DIRECTION   1   // 1:竖屏, 0:横屏
     
-#elif (CURRENT_LCD_TYPE == LCD_TYPE_ST7789)
-    #define LCD_WIDTH       240
+#elif (CURRENT_LCD_TYPE == LCD_TYPE_ILI9341_QSPI)
+    #define LCD_WIDTH       320
     #define LCD_HEIGHT      240
     #define LCD_DIRECTION   1
     

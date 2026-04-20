@@ -200,8 +200,8 @@ typedef struct
   uint8_t CardType;
 } SD_CardInfo;
 
-/*ºê¶¨Òå*/
-#define SDIO_FIFO_ADDRESS                ((uint32_t)0x40018080)	 //SDIO_FIOFµØÖ·=SDIOµØÖ·+0x80ÖÁ sdioµØÖ·+0xfc
+/*ï¿½ê¶¨ï¿½ï¿½*/
+#define SDIO_FIFO_ADDRESS                ((uint32_t)0x40018080)	 //SDIO_FIOFï¿½ï¿½Ö·=SDIOï¿½ï¿½Ö·+0x80ï¿½ï¿½ sdioï¿½ï¿½Ö·+0xfc
 /** 
   * @brief  SDIO Intialization Frequency (400KHz max)
   */
@@ -265,7 +265,7 @@ typedef struct
 
 /** 
   * @brief Following commands are SD Card Specific commands.
-  *        SDIO_APP_CMD £ºCMD55 should be sent before sending these commands. 
+  *        SDIO_APP_CMD ï¿½ï¿½CMD55 should be sent before sending these commands. 
   */
 #define SD_CMD_APP_SD_SET_BUSWIDTH                 ((uint8_t)6)  /*!< For SD Card only */
 #define SD_CMD_SD_APP_STAUS                        ((uint8_t)13) /*!< For SD Card only */

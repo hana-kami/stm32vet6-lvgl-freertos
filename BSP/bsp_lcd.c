@@ -50,6 +50,7 @@ void LCD_DrawPoint(uint16_t x, uint16_t y, uint16_t color)
 #if (CURRENT_LCD_TYPE == LCD_TYPE_ILI9341)
     ILI9341_SetPointPixel(x, y, color);
 #endif
+
 }
 
 /**
@@ -59,8 +60,8 @@ uint16_t LCD_GetPoint(uint16_t x, uint16_t y)
 {
 #if (CURRENT_LCD_TYPE == LCD_TYPE_ILI9341)
     return ILI9341_GetPointPixel(x, y);
-#else
-    return 0;
+#elif (CURRENT_LCD_TYPE == LCD_TYPE_ILI9341_QSPI)
+    ILI9341_QSPI_DrawPoint(x, y, color);
 #endif
 }
 

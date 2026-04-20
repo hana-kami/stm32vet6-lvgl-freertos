@@ -134,20 +134,28 @@ void DebugMon_Handler(void)
   * @param  None
   * @retval None
   */
-extern void xPortSysTickHandler( void );
-void SysTick_Handler(void)
-{	
-#ifdef INCLUDE_xTaskGetSchedulerState
-		//�ж�ϵͳ�Ƿ��ȶ�����
-	if(xTaskGetSchedulerState()!=taskSCHEDULER_NOT_STARTED){
+volatile uint32_t g_sys_tick = 0;
+
+// 修改 SysTick_Handler，用条件编译支持两种模式
+#if (USE_FREERTOS == 1)
+    // FreeRTOS 模式的 SysTick_Handler
+    void SysTick_Handler(void)
+    {	
+    #ifdef INCLUDE_xTaskGetSchedulerState
+        if(xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED){
+    #endif
+            xPortSysTickHandler();    
+    #ifdef INCLUDE_xTaskGetSchedulerState
+        }
+    #endif
+    }
+#else
+    // 裸机模式的 SysTick_Handler
+    void SysTick_Handler(void)
+    {
+        g_sys_tick++;
+    }
 #endif
-		
-	xPortSysTickHandler();
-		
-#ifdef INCLUDE_xTaskGetSchedulerState
-	}
-#endif
-}
 
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
