@@ -5,6 +5,8 @@
 #include "bsp_sdfs_app.h"
 #include "test_framework.h"
 #include "FreeRTOSConfig.h" 
+#include "FreeRTOS.h" 
+#include "task.h"
 #include <stdio.h>
 
 #if (USE_FREERTOS == 0)
@@ -29,6 +31,10 @@ static void SysTick_Init(void)
 
 int main(void)
 {
+    uint8_t key;
+	
+    uint32_t last_auto_time = 0;
+    uint32_t last_loop_time = 0;
     // 基础初始化
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     USART_Config();
@@ -57,10 +63,7 @@ int main(void)
     
 #else
     // ========== 裸机模式 ==========
-    uint8_t key;
     
-    uint32_t last_auto_time = 0;
-    uint32_t last_loop_time = 0;
     while(1)
     {
         uint32_t now = GetTickMs();

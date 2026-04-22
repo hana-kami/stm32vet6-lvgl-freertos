@@ -81,11 +81,11 @@ static DelayTimer_t g_delay_timer = {0, 0, 0};
     }
 #else
 
-    extern volatile uint32_t g_sys_tick;
+    // extern volatile uint32_t g_sys_tick;
     
     static uint32_t GetTickMs(void)
     {
-        return g_sys_tick;
+        return 0;
     }
 #endif
 
@@ -148,6 +148,7 @@ void Test_SolidColor_Init(void)
 
 void Test_SolidColor_Run(void)
 {
+    const char* color_name;
     uint8_t color_index = g_current_test;
     
     if(color_index >= COLOR_COUNT) return;
@@ -168,7 +169,7 @@ void Test_SolidColor_Run(void)
             break;
             
         case SOLID_STATE_SHOW_TITLE:
-            const char* color_name = "";
+            color_name = "";
             switch(color_index) {
                 case 0: color_name = "RED SCREEN"; break;
                 case 1: color_name = "GREEN SCREEN"; break;
@@ -245,15 +246,19 @@ void Test_Shapes_Init(void)
 
 void Test_Shapes_Run(void)
 {
+    uint16_t width;
+    uint16_t height;
+    uint16_t center_x;
+    uint16_t center_y;
     switch(shapes_state)
     {
         case SHAPES_STATE_SHOW:
             ShowTitleBar("SHAPES TEST");
     
-            uint16_t width = LCD_GetWidth();
-            uint16_t height = LCD_GetHeight();
-            uint16_t center_x = width / 2;
-            uint16_t center_y = height / 2;
+            width = LCD_GetWidth();
+            height = LCD_GetHeight();
+            center_x = width / 2;
+            center_y = height / 2;
             
             // 画矩形
             LCD_DrawRectangle(20, 40, 80, 60, LCD_COLOR_RED, 0);
@@ -310,13 +315,16 @@ void Test_Text_Init(void)
 
 void Test_Text_Run(void)
 {
+    uint16_t y;
+    uint16_t line_height;
+    char hex_buf[20];
     switch(text_state)
     {
         case TEXT_STATE_SHOW:
             ShowTitleBar("TEXT DISPLAY TEST");
     
-            uint16_t y = 50;
-            uint16_t line_height = 20;
+            y = 50;
+            line_height = 20;
             
             LCD_ShowString(10, y, "Hello STM32!", LCD_COLOR_BLACK, LCD_COLOR_GREEN);
             y += line_height;
@@ -330,7 +338,6 @@ void Test_Text_Run(void)
             
             LCD_ShowString(10, y, "Hex: 0x", LCD_COLOR_BLACK, LCD_COLOR_MAGENTA);
             // 显示十六进制
-            char hex_buf[20];
             sprintf(hex_buf, "%04X", 0xABCD);
             LCD_ShowString(70, y, hex_buf, LCD_COLOR_BLACK, LCD_COLOR_MAGENTA);
             text_state = TEXT_STATE_WAIT;

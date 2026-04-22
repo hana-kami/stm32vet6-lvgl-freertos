@@ -1,0 +1,13 @@
+..\..\output\port.o: ..\..\FreeRTOS\portable\port.c
+..\..\output\port.o: ..\..\FreeRTOS\src\FreeRTOS.h
+..\..\output\port.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+..\..\output\port.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+..\..\output\port.o: ..\..\User\FreeRTOSConfig.h
+..\..\output\port.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+..\..\output\port.o: ..\..\FreeRTOS\src\projdefs.h
+..\..\output\port.o: ..\..\FreeRTOS\src\portable.h
+..\..\output\port.o: ..\..\FreeRTOS\src\deprecated_definitions.h
+..\..\output\port.o: ..\..\FreeRTOS\portable\portmacro.h
+..\..\output\port.o: ..\..\FreeRTOS\src\mpu_wrappers.h
+..\..\output\port.o: ..\..\FreeRTOS\src\task.h
+..\..\output\port.o: ..\..\FreeRTOS\src\list.h

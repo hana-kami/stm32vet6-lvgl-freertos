@@ -1,0 +1,16 @@
+..\..\output\queue.o: ..\..\FreeRTOS\src\queue.c
+..\..\output\queue.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+..\..\output\queue.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+..\..\output\queue.o: ..\..\FreeRTOS\src\FreeRTOS.h
+..\..\output\queue.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+..\..\output\queue.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+..\..\output\queue.o: ..\..\User\FreeRTOSConfig.h
+..\..\output\queue.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+..\..\output\queue.o: ..\..\FreeRTOS\src\projdefs.h
+..\..\output\queue.o: ..\..\FreeRTOS\src\portable.h
+..\..\output\queue.o: ..\..\FreeRTOS\src\deprecated_definitions.h
+..\..\output\queue.o: ..\..\FreeRTOS\portable\portmacro.h
+..\..\output\queue.o: ..\..\FreeRTOS\src\mpu_wrappers.h
+..\..\output\queue.o: ..\..\FreeRTOS\src\task.h
+..\..\output\queue.o: ..\..\FreeRTOS\src\list.h
+..\..\output\queue.o: ..\..\FreeRTOS\src\queue.h

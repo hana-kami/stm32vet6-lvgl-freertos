@@ -1,0 +1,14 @@
+..\..\output\heap_4.o: ..\..\FreeRTOS\portable\heap_4.c
+..\..\output\heap_4.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+..\..\output\heap_4.o: ..\..\FreeRTOS\src\FreeRTOS.h
+..\..\output\heap_4.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+..\..\output\heap_4.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+..\..\output\heap_4.o: ..\..\User\FreeRTOSConfig.h
+..\..\output\heap_4.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+..\..\output\heap_4.o: ..\..\FreeRTOS\src\projdefs.h
+..\..\output\heap_4.o: ..\..\FreeRTOS\src\portable.h
+..\..\output\heap_4.o: ..\..\FreeRTOS\src\deprecated_definitions.h
+..\..\output\heap_4.o: ..\..\FreeRTOS\portable\portmacro.h
+..\..\output\heap_4.o: ..\..\FreeRTOS\src\mpu_wrappers.h
+..\..\output\heap_4.o: ..\..\FreeRTOS\src\task.h
+..\..\output\heap_4.o: ..\..\FreeRTOS\src\list.h

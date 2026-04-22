@@ -155,7 +155,7 @@
 /* 支持静态内存分配（暂时不需要，设为0）*/
 #define configSUPPORT_STATIC_ALLOCATION            0					
 /* 系统总堆大小（单位：字节）STM32F103根据实际RAM调整 */
-#define configTOTAL_HEAP_SIZE                      ((size_t)(20 * 1024))    
+#define configTOTAL_HEAP_SIZE                      ((size_t)(15  * 1024))    
 
 
 /***************************************************************
@@ -265,7 +265,7 @@
 #endif
 
 #ifndef USE_FREERTOS
-    #define USE_FREERTOS 0
+    #define USE_FREERTOS 1
 #endif
 
 #endif /* FREERTOS_CONFIG_H */

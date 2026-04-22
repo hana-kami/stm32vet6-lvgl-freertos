@@ -1,0 +1,16 @@
+..\..\output\timers.o: ..\..\FreeRTOS\src\timers.c
+..\..\output\timers.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+..\..\output\timers.o: ..\..\FreeRTOS\src\FreeRTOS.h
+..\..\output\timers.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+..\..\output\timers.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+..\..\output\timers.o: ..\..\User\FreeRTOSConfig.h
+..\..\output\timers.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+..\..\output\timers.o: ..\..\FreeRTOS\src\projdefs.h
+..\..\output\timers.o: ..\..\FreeRTOS\src\portable.h
+..\..\output\timers.o: ..\..\FreeRTOS\src\deprecated_definitions.h
+..\..\output\timers.o: ..\..\FreeRTOS\portable\portmacro.h
+..\..\output\timers.o: ..\..\FreeRTOS\src\mpu_wrappers.h
+..\..\output\timers.o: ..\..\FreeRTOS\src\task.h
+..\..\output\timers.o: ..\..\FreeRTOS\src\list.h
+..\..\output\timers.o: ..\..\FreeRTOS\src\queue.h
+..\..\output\timers.o: ..\..\FreeRTOS\src\timers.h

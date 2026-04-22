@@ -13,7 +13,9 @@
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
   * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
-  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  * DIRECT, INDIRECT OR CONSEQUENTI
+  
+  AL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
@@ -23,8 +25,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
-#include "FreeRTOS.h"
-#include "task.h"
+#include "bsp_xpt2046_lcd.h"
+#include "bsp_sdio_sdcard.h"
+
+
+
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
   */
@@ -57,7 +62,6 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* Go to infinite loop when Hard Fault exception occurs */
-	printf("HardFault");
   while (1)
   {
   }
@@ -103,15 +107,6 @@ void UsageFault_Handler(void)
 }
 
 /**
-  * @brief  This function handles SVCall exception.
-  * @param  None
-  * @retval None
-  */
-//void SVC_Handler(void)
-//{
-//}
-
-/**
   * @brief  This function handles Debug Monitor exception.
   * @param  None
   * @retval None
@@ -120,14 +115,6 @@ void DebugMon_Handler(void)
 {
 }
 
-/**
-  * @brief  This function handles PendSVC exception.
-  * @param  None
-  * @retval None
-  */
-//void PendSV_Handler(void)
-//{
-//}
 
 /**
   * @brief  This function handles SysTick Handler.
@@ -157,6 +144,20 @@ volatile uint32_t g_sys_tick = 0;
     }
 #endif
 
+
+// EXTI Line --> PE4
+void macXPT2046_EXTI_INT_FUNCTION ( void )
+{ 
+  if ( EXTI_GetITStatus ( macXPT2046_EXTI_LINE ) != RESET )
+  {	
+    ucXPT2046_TouchFlag = 1;
+		
+    EXTI_ClearITPendingBit ( macXPT2046_EXTI_LINE );
+		
+  }
+	
+}
+
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
@@ -176,6 +177,19 @@ volatile uint32_t g_sys_tick = 0;
 /**
   * @}
   */ 
+/*
+ * ��������SDIO_IRQHandler
+ * ����  ����SDIO_ITConfig(���������������sdio�ж�	��
+ *		     ���ݴ������ʱ�����ж�
+ * ����  ����		 
+ * ���  ����
+ */
+void SDIO_IRQHandler(void) 
+{
+  /* Process All SDIO Interrupt Sources */
+  SD_ProcessIRQSrc();
+}
+
 
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
