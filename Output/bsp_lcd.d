@@ -1,6 +1,7 @@
 ..\..\output\bsp_lcd.o: ..\..\User\BSP\bsp_lcd.c
 ..\..\output\bsp_lcd.o: ..\..\User\BSP\bsp_lcd.h
 ..\..\output\bsp_lcd.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+..\..\output\bsp_lcd.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 ..\..\output\bsp_lcd.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\bsp_lcd.o: ..\..\Libraries\CMSIS\core_cm3.h
 ..\..\output\bsp_lcd.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
@@ -29,6 +30,8 @@
 ..\..\output\bsp_lcd.o: ..\..\Libraries\FWlib\inc\stm32f10x_usart.h
 ..\..\output\bsp_lcd.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\bsp_lcd.o: ..\..\Libraries\FWlib\inc\misc.h
-..\..\output\bsp_lcd.o: ..\..\User\BSP\bsp_ili9341_lcd.h
-..\..\output\bsp_lcd.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
-..\..\output\bsp_lcd.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+..\..\output\bsp_lcd.o: ..\..\User\BSP\bsp_lcd_config.h
+..\..\output\bsp_lcd.o: ..\..\User\BSP\bsp_st75161_lcd.h
+..\..\output\bsp_lcd.o: ..\..\User\BSP\bsp_sdfs_app.h
+..\..\output\bsp_lcd.o: ..\..\User\ff9\diskio.h
+..\..\output\bsp_lcd.o: ..\..\User\ff9\integer.h

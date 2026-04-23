@@ -575,11 +575,6 @@
               <FilePath>..\..\User\BSP\bsp_key.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\BSP\bsp_lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_sdfs_app.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\BSP\bsp_sdfs_app.c</FilePath>
@@ -608,6 +603,21 @@
               <FileName>test_framework.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\test_framework.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_gc9b71_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\BSP\bsp_gc9b71_lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\BSP\bsp_lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_st75161_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\BSP\bsp_st75161_lcd.c</FilePath>
             </File>
           </Files>
         </Group>

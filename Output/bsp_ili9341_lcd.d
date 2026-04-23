@@ -29,4 +29,4 @@
 ..\..\output\bsp_ili9341_lcd.o: ..\..\Libraries\FWlib\inc\stm32f10x_usart.h
 ..\..\output\bsp_ili9341_lcd.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\bsp_ili9341_lcd.o: ..\..\Libraries\FWlib\inc\misc.h
-..\..\output\bsp_ili9341_lcd.o: ..\..\User\BSP\ascii.h
+..\..\output\bsp_ili9341_lcd.o: ..\..\User\BSP\bsp_lcd_config.h

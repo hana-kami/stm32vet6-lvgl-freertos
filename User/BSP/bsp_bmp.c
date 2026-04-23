@@ -1,6 +1,6 @@
 #include "bsp_bmp.h"
 #include "ff.h"
-#include "bsp_ili9341_lcd.h"
+#include "bsp_lcd.h"  // 改为包含统一接口头文件
 //#include "FreeRTOS.h"     
 //#include "task.h"         
 
@@ -15,15 +15,11 @@
 
 /* 全局变量定义 */
 BYTE pColorData[960];					/* 一行像素的颜色数据缓冲区，最大支持320像素 * 3字节 = 960 */
-//tagRGBQUAD dataOfBmp[17*19];         /* 备用：BMP调色板数据缓冲区（已注释）*/
 FATFS bmpfs[2];                         /* FATFS文件系统对象数组，用于SD卡文件系统 */
 FIL bmpfsrc, bmpfdst;                   /* 文件对象：bmpfsrc用于读文件，bmpfdst用于写文件 */
 FRESULT bmpres;                         /* FATFS操作结果码 */
 
-/* 调试打印宏定义
- * 如需打印BMP相关的调试信息，请将下面的printf注释去掉
- * 注意：使用printf()需要包含相应的串口初始化代码
- */
+/* 调试打印宏定义 */
 #define BMP_DEBUG_PRINTF(FORMAT,...)  //printf(FORMAT,##__VA_ARGS__)	 
 
 /**
@@ -63,6 +59,15 @@ static void showBmpInforHead(tagBITMAPINFOHEADER* pBmpInforHead)
     BMP_DEBUG_PRINTF("\r\n");
 }
 
+/**
+ * @brief  屏幕截图功能
+ * @param  x 起始X坐标
+ * @param  y 起始Y坐标
+ * @param  Width 截图宽度
+ * @param  Height 截图高度
+ * @param  filename 保存的文件名
+ * @retval 0:成功, FR_EXIST:文件已存在, -1:失败
+ */
 int Screen_shot( uint16_t x, uint16_t y, uint16_t Width, uint16_t Height, uint8_t * filename)
 {
 	/* BMP文件头，共54字节 */
@@ -98,9 +103,7 @@ int Screen_shot( uint16_t x, uint16_t y, uint16_t Width, uint16_t Height, uint8_
 	char kk[4] = {0, 0, 0, 0};      // 用于对齐填充的4字节0数据
 	uint8_t ucAlign;                // 每行需要填充的字节数（4字节对齐用）
 	
-	/* 计算文件总大小 = 像素数据 + 行填充字节 + 文件头
-	 * 每个像素3字节(RGB)，每行需要填充到4的倍数
-	 */
+	/* 计算文件总大小 = 像素数据 + 行填充字节 + 文件头 */
 	file_size = (long)Width * (long)Height * 3 + Height * (Width % 4) + 54;		
 
 	/* 设置文件大小到文件头（4字节，小端格式）*/
@@ -123,13 +126,11 @@ int Screen_shot( uint16_t x, uint16_t y, uint16_t Width, uint16_t Height, uint8_
 	header[24] = (height >> 16) & 0x000000ff;
 	header[25] = (height >> 24) & 0x000000ff;
 	
-	/* 按指定格式组合完整文件名，保存到tmp_name */
+	/* 按指定格式组合完整文件名 */
 	sprintf((char*)tmp_name, "0:%s.bmp", filename);
 	
-	/* 创建新文件（如果文件已存在则失败）*/
+	/* 创建新文件 */
 	bmpres = f_open( &bmpfsrc, (char*)tmp_name, FA_CREATE_NEW | FA_WRITE );
-	
-	/* 新创建的文件需要先关闭，再以读写方式重新打开 */
 	f_close(&bmpfsrc);
 	
 	/* 以读写方式重新打开已存在的文件 */
@@ -137,64 +138,58 @@ int Screen_shot( uint16_t x, uint16_t y, uint16_t Width, uint16_t Height, uint8_
 
 	if ( bmpres == FR_OK )  // 文件打开成功
 	{    
-		/* 先将预定义的54字节BMP文件头写入文件 */
+		/* 写入BMP文件头 */
 		bmpres = f_write(&bmpfsrc, header, sizeof(unsigned char) * 54, &mybw);		
-		
-		/* 设置LCD扫描方向为：左上角->右下角（正常显示方向）*/
-		//ILI9341_GramScan( 1 );
 		
 		/* 计算每行需要填充的字节数（使行字节数为4的倍数）*/
 		ucAlign = Width % 4;
 		
 		/* 逐行读取LCD像素数据并写入文件 */
-		for(i = 0; i < Height; i++)  // 遍历每一行
+		for(i = 0; i < Height; i++)
 		{
-			for(j = 0; j < Width; j++)  // 遍历当前行的每个像素
+			for(j = 0; j < Width; j++)
 			{					
 				/* 获取LCD指定坐标的像素颜色值（注意BMP存储顺序为从底向上）*/
-				read_data = ILI9341_GetPointPixel ( x + j, y + Height - 1 - i );					
+				read_data = LCD_GetPoint(x + j, y + Height - 1 - i);					
 				
-				/* 从RGB565格式中提取RGB分量（各5/6/5位）*/
-				r = GETR_FROM_RGB16(read_data);  // 提取红色分量（5位，范围0-31）
-				g = GETG_FROM_RGB16(read_data);  // 提取绿色分量（6位，范围0-63）
-				b = GETB_FROM_RGB16(read_data);  // 提取蓝色分量（5位，范围0-31）
+				/* 从RGB565格式中提取RGB分量 */
+				r = GETR_FROM_RGB16(read_data);
+				g = GETG_FROM_RGB16(read_data);
+				b = GETB_FROM_RGB16(read_data);
 
-				/* BMP格式存储顺序为BGR，按顺序写入文件 */
-				bmpres = f_write(&bmpfsrc, &b, sizeof(unsigned char), &mybw);  // 写入蓝色分量
-				bmpres = f_write(&bmpfsrc, &g, sizeof(unsigned char), &mybw);  // 写入绿色分量
-				bmpres = f_write(&bmpfsrc, &r, sizeof(unsigned char), &mybw);  // 写入红色分量
+				/* BMP格式存储顺序为BGR */
+				f_write(&bmpfsrc, &b, sizeof(unsigned char), &mybw);
+				f_write(&bmpfsrc, &g, sizeof(unsigned char), &mybw);
+				f_write(&bmpfsrc, &r, sizeof(unsigned char), &mybw);
 			}
 			
-			/* 如果行字节数不是4的倍数，需要填充0以达到4字节对齐 */
-			if( ucAlign )  // 需要填充
-				bmpres = f_write ( & bmpfsrc, kk, sizeof(unsigned char) * ( ucAlign ), & mybw );
-		}  /* 行循环结束 */
+			/* 行字节数不是4的倍数时需要填充0 */
+			if( ucAlign )
+				f_write(&bmpfsrc, kk, sizeof(unsigned char) * (ucAlign), &mybw);
+		}
 
-		f_close(&bmpfsrc);  // 关闭文件
-		
+		f_close(&bmpfsrc);
 		return 0;  // 截图成功
 	}
-	else if ( bmpres == FR_EXIST )  // 文件已存在错误
-		return FR_EXIST;	 			// 返回8
-	
-	else  // 其他错误
-		return -1;  // 截图失败
+	else if ( bmpres == FR_EXIST )
+		return FR_EXIST;
+	else
+		return -1;
 }
 
-
 /**
- * @brief  ����ILI9341�Ľ�ȡBMPͼƬ
- * @param  x ����ɨ��ģʽ1�½�ȡ��������X���� 
- * @param  y ����ɨ��ģʽ1�½�ȡ��������Y���� 
- * @param  pic_name ��BMP��ŵ�ȫ·��
- * @retval ��
+ * @brief  显示BMP图片（统一接口版本）
+ * @param  x 显示起始X坐标
+ * @param  y 显示起始Y坐标
+ * @param  pic_name BMP文件的完整路径
+ * @retval 无
  */
 void Lcd_show_bmp ( uint16_t x, uint16_t y, uint8_t * pic_name )
 {
 	int i, j, k;
 	int width, height, l_width;
 
-	BYTE red,green,blue;
+	BYTE red, green, blue;
 	BITMAPFILEHEADER bitHead;
 	BITMAPINFOHEADER bitInfoHead;
 	WORD fileType;
@@ -205,16 +200,16 @@ void Lcd_show_bmp ( uint16_t x, uint16_t y, uint8_t * pic_name )
 
 	f_mount(0, &bmpfs[0]);
 	BMP_DEBUG_PRINTF("file mount ok \r\n");    
-	bmpres = f_open( &bmpfsrc , (char *)tmp_name, FA_OPEN_EXISTING | FA_READ);	
-/*-------------------------------------------------------------------------------------------------------*/
+	bmpres = f_open( &bmpfsrc , (char *)tmp_name, FA_OPEN_EXISTING | FA_READ);
+	
 	if(bmpres == FR_OK)
 	{
 		BMP_DEBUG_PRINTF("Open file success\r\n");
 
-		/* ¶ÁÈ¡ÎÄ¼þÍ·ÐÅÏ¢  Á½¸ö×Ö½Ú*/         
-		f_read(&bmpfsrc,&fileType,sizeof(WORD),&read_num);     
+		/* 读取文件类型标识（2字节）*/         
+		f_read(&bmpfsrc, &fileType, sizeof(WORD), &read_num);     
 
-		/* ÅÐ¶ÏÊÇ²»ÊÇbmpÎÄ¼þ "BM"*/
+		/* 判断是否为BMP文件 "BM" */
 		if(fileType != 0x4d42)
 		{
 			BMP_DEBUG_PRINTF("file is not .bmp file!\r\n");
@@ -225,63 +220,64 @@ void Lcd_show_bmp ( uint16_t x, uint16_t y, uint8_t * pic_name )
 			BMP_DEBUG_PRINTF("Ok this is .bmp file\r\n");	
 		}        
 
-		/* ¶ÁÈ¡BMPÎÄ¼þÍ·ÐÅÏ¢*/
-		f_read(&bmpfsrc,&bitHead,sizeof(tagBITMAPFILEHEADER),&read_num);        
+		/* 读取BMP文件头信息 */
+		f_read(&bmpfsrc, &bitHead, sizeof(tagBITMAPFILEHEADER), &read_num);        
 		showBmpHead(&bitHead);
 
-		/* ¶ÁÈ¡Î»Í¼ÐÅÏ¢Í·ÐÅÏ¢ */
-		f_read(&bmpfsrc,&bitInfoHead,sizeof(BITMAPINFOHEADER),&read_num);        
+		/* 读取位图信息头信息 */
+		f_read(&bmpfsrc, &bitInfoHead, sizeof(BITMAPINFOHEADER), &read_num);        
 		showBmpInforHead(&bitInfoHead);
 	}    
 	else
 	{
 		BMP_DEBUG_PRINTF("file open fail!\r\n");
+		/* 文件打开失败时，用不同颜色清屏提示错误类型 */
 		switch(bmpres)
-    {
-        case FR_DISK_ERR:          // 1 
-            ILI9341_Clear(0,0,240,320, 0xF800); // ??
-            break;
-        
-        case FR_INT_ERR:           // 2 
-            ILI9341_Clear(0,0,240,320, 0xFFE0); 
-            break;
-        
-        case FR_NOT_READY:         // 4
-            ILI9341_Clear(0,0,240,320, 0x07E0); 
-            break;
-        
-        case FR_NO_FILE:           // 5 
-            ILI9341_Clear(0,0,240,320, 0x001F); 
-            break;
-        
-        case FR_NO_PATH:           // 6 ?????
-            ILI9341_Clear(0,0,240,320, 0x07FF); // ??
-            break;
-        
-        case FR_INVALID_NAME:      // 7 ?????
-            ILI9341_Clear(0,0,240,320, 0xF81F); // ??
-            break;
-        
-        case FR_DENIED:            // 9 ?????
-            ILI9341_Clear(0,0,240,320, 0xC618); // ??
-            break;
-        
-        case FR_INVALID_OBJECT:    // 13 ???????
-            ILI9341_Clear(0,0,240,320, 0x0000); // ??
-            break;
-        
-        default:                   // ????
-            ILI9341_Clear(0,0,240,320, 0xFFFF); // ??
-            break;
-			}
+		{
+			case FR_DISK_ERR:          // 1 
+				LCD_Clear(0xF800); // 红色
+				break;
+			
+			case FR_INT_ERR:           // 2 
+				LCD_Clear(0xFFE0); // 黄色
+				break;
+			
+			case FR_NOT_READY:         // 4
+				LCD_Clear(0x07E0); // 绿色
+				break;
+			
+			case FR_NO_FILE:           // 5 
+				LCD_Clear(0x001F); // 蓝色
+				break;
+			
+			case FR_NO_PATH:           // 6
+				LCD_Clear(0x07FF); // 青色
+				break;
+			
+			case FR_INVALID_NAME:      // 7
+				LCD_Clear(0xF81F); // 品红
+				break;
+			
+			case FR_DENIED:            // 9
+				LCD_Clear(0xC618); // 灰色
+				break;
+			
+			case FR_INVALID_OBJECT:    // 13
+				LCD_Clear(0x0000); // 黑色
+				break;
+			
+			default:                   // 其他错误
+				LCD_Clear(0xFFFF); // 白色
+				break;
+		}
 		return;
 	}    
-/*-------------------------------------------------------------------------------------------------------*/
+
 	width = bitInfoHead.biWidth;
 	height = bitInfoHead.biHeight;
 
-	/* ¼ÆËãÎ»Í¼µÄÊµ¼Ê¿í¶È²¢È·±£ËüÎª32µÄ±¶Êý	*/
-	l_width = WIDTHBYTES(width* bitInfoHead.biBitCount);	
+	/* 计算位图的实际宽度并确保它为4的倍数 */
+	l_width = WIDTHBYTES(width * bitInfoHead.biBitCount);	
 
 	if(l_width > 720)
 	{
@@ -289,52 +285,32 @@ void Lcd_show_bmp ( uint16_t x, uint16_t y, uint8_t * pic_name )
 		return;
 	}
 	
-	/* ÉèÖÃLcd Gram É¨Ãè·½ÏòÎª: ÓÒÏÂ½Ç->×óÉÏ½Ç */
-	ILI9341_GramScan (1);
+	/* 设置LCD扫描方向为正常方向 */
+	LCD_SetScanDirection(1);
 	
-	/* ¿ªÒ»¸öÍ¼Æ¬´óÐ¡µÄ´°¿Ú*/
-	ILI9341_OpenWindow(x, y, width, height);
-	comm_out ( macCMD_SetPixel ); 
-
+	/* 打开一个图片大小的窗口 */
+	LCD_SetWindow(x, y, width, height);
 	
-	/* ÅÐ¶ÏÊÇ·ñÊÇ24bitÕæ²ÊÉ«Í¼ */
+	/* 判断是否为24位真彩色图 */
 	if( bitInfoHead.biBitCount >= 24 )
 	{
 		for ( i = 0; i < height; i ++ )
 		{
-      f_lseek ( & bmpfsrc, bitHead .bfOffBits + ( height - i - 1 ) * l_width );	
+			f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * l_width);	
 			
-			/* ¶ÁÈ¡Ò»ÐÐbmpµÄÊý¾Ýµ½Êý×épColorDataÀïÃæ */
-			#if 0
-				for(j=0; j< l_width; j++)	 													
-				{                
-					f_read(&bmpfsrc,pColorData+j,1,&read_num);
-				}            
-				
-			#elif 0	
-				f_read ( & bmpfsrc, pColorData, l_width / 2, & read_num );		
-				f_read ( & bmpfsrc, pColorData + l_width / 2, l_width / 2, & read_num );
-				
-			#else
-				f_read ( & bmpfsrc, pColorData, l_width, & read_num );
-				
-			#endif
+			/* 读取一行BMP数据到缓冲区 */
+			f_read(&bmpfsrc, pColorData, l_width, &read_num);
 
-			for(j=0; j<width; j++) 											   //Ò»ÐÐÓÐÐ§ÐÅÏ¢
+			for(j = 0; j < width; j++)
 			{
-				k = j*3;																	 //Ò»ÐÐÖÐµÚK¸öÏñËØµÄÆðµã
+				k = j * 3;
 				blue = pColorData[k+2];
 				green = pColorData[k+1];
-				red = 	pColorData[k];
-				ILI9341_Write_Data ( RGB24TORGB16 ( blue, green, red ) ); //Ð´ÈëLCD-GRAM
-				//ILI9341_Write_Data ( blue<<16|green<<8|red );
-				
+				red = pColorData[k];
+				LCD_DrawPoint(x + j, y + i, RGB24TORGB16(red, green, blue));
 			}            
-			
 		}        
-		
 	}    
-	
 	else 
 	{        
 		BMP_DEBUG_PRINTF("SORRY, THIS PIC IS NOT A 24BITS REAL COLOR");
@@ -342,362 +318,432 @@ void Lcd_show_bmp ( uint16_t x, uint16_t y, uint8_t * pic_name )
 	}
 	
 	f_close(&bmpfsrc);  
-  
 }
-
 /**
- * @brief  显示BMP图片（通过ILI9341驱动）
- * @param  x 在扫描模式1下显示位置的起始X坐标
- * @param  y 在扫描模式1下显示位置的起始Y坐标
- * @param  pic_name BMP文件的完整路径（如 "/11.bmp"）
- * @retval 无
+ * @brief  显示BMP图片（通用版本，自动适配彩色屏和单色屏）
+ * @param  usX: 显示起始X坐标
+ * @param  usY: 显示起始Y坐标
+ * @param  pPath: BMP文件的完整路径
+ * @retval 0:成功, 非0:失败
  */
-void Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
+uint8_t Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
 {
-	int i, j, k;                    // 循环变量：i-行计数，j-列计数，k-像素数据索引
-	int width, height, l_width;     // width-图片宽度，height-图片高度，l_width-实际行字节数（4字节对齐）
-	
-	BYTE red, green, blue;          // RGB颜色分量
-	BITMAPFILEHEADER bitHead;       // BMP文件头结构体
-	BITMAPINFOHEADER bitInfoHead;   // BMP信息头结构体
-	WORD fileType;                  // 文件类型标识（应为0x4D42即"BM"）
-	
-	unsigned int read_num;          // 实际读取的字节数
-	unsigned char tmp_name[20];     // 临时文件名缓冲区
-	sprintf((char*)tmp_name,"0:%s",pPath);  // 添加SD卡驱动号前缀"0:"，如"0:/11.bmp"
-	
-	BMP_DEBUG_PRINTF("file mount ok \r\n");    
-	
-	/* 打开BMP文件 */
-	bmpres = f_open( &bmpfsrc , (char *)tmp_name, FA_OPEN_EXISTING | FA_READ);
-	
-/*-------------------------------------------------------------------------------------------------------*/
-	if(bmpres == FR_OK)  // 文件打开成功
-	{
-		BMP_DEBUG_PRINTF("Open file success\r\n");
-		
-		/* 读取文件头信息，前2个字节 */         
-		f_read(&bmpfsrc, &fileType, sizeof(WORD), &read_num);     
-		
-		/* 判断是否为BMP文件，文件标识应为"BM"(0x4D42) */
-		if(fileType != 0x4d42)
-		{
-			BMP_DEBUG_PRINTF("file is not .bmp file!\r\n");
-			return;  // 不是BMP文件，退出
-		}
-		else
-		{
-			BMP_DEBUG_PRINTF("Ok this is .bmp file\r\n");	
-		}        
-		
-		/* 读取BMP文件头信息（14字节）*/
-		f_read(&bmpfsrc, &bitHead, sizeof(tagBITMAPFILEHEADER), &read_num);        
-		showBmpHead(&bitHead);  // 调试输出文件头信息
-		
-		/* 读取位图信息头信息（40字节）*/
-		f_read(&bmpfsrc, &bitInfoHead, sizeof(BITMAPINFOHEADER), &read_num);        
-		showBmpInforHead(&bitInfoHead);  // 调试输出位图信息头
-	}    
-	else  // 文件打开失败
-	{
-		BMP_DEBUG_PRINTF("file open fail!\r\n");
-		switch(bmpres)
-		{
-			case FR_DISK_ERR:          // 1 
-				ILI9341_Clear(0,0,240,320, 0xF800); // ??
-				break;
-			
-			case FR_INT_ERR:           // 2 
-				ILI9341_Clear(0,0,240,320, 0xFFE0); 
-				break;
-			
-			case FR_NOT_READY:         // 4
-				ILI9341_Clear(0,0,240,320, 0x07E0); 
-				break;
-			
-			case FR_NO_FILE:           // 5 
-				ILI9341_Clear(0,0,240,320, 0x001F); 
-				break;
-			
-			case FR_NO_PATH:           // 6 ?????
-				ILI9341_Clear(0,0,240,320, 0x07FF); // ??
-				break;
-			
-			case FR_INVALID_NAME:      // 7 ?????
-				ILI9341_Clear(0,0,240,320, 0xF81F); // ??
-				break;
-			
-			case FR_DENIED:            // 9 ?????
-				ILI9341_Clear(0,0,240,320, 0xC618); // ??
-				break;
-			
-			case FR_INVALID_OBJECT:    // 13 ???????
-				ILI9341_Clear(0,0,240,320, 0x0000); // ??
-				break;
-			
-			default:                   // ????
-				ILI9341_Clear(0,0,240,320, 0xFFFF); // ??
-				break;
-				} 
-		return;
-	}    
-/*-------------------------------------------------------------------------------------------------------*/
-	/* 获取图片的宽度和高度 */
-	width = bitInfoHead.biWidth;    // 图片宽度（像素）
-	height = bitInfoHead.biHeight;  // 图片高度（像素）
-	
-	/* 计算图片实际行字节数，必须是4的倍数（Windows BMP格式要求）*/
-	l_width = WIDTHBYTES(width * bitInfoHead.biBitCount);  // biBitCount: 每个像素的位数（24位真彩色为24）
-	
-	if(l_width > 720)  // 检查行缓冲区是否溢出（720字节对应240像素*24位）
-	{
-		BMP_DEBUG_PRINTF("\n SORRY, PIC IS TOO BIG (<=320)\n");
-		return;
-	}
-	
-	ILI9341_GramScan (1);
-	
-	/* 在LCD上打开与图片大小相同的显示窗口 */
-	ILI9341_OpenWindow(usX, usY, width, height);
-	comm_out ( macCMD_SetPixel );  // 发送写像素命令，准备写入图片数据
-	
-	/* 判断是否为24位真彩色图片 */
-    if(bitInfoHead.biBitCount == 1)  // 单色位图
+    int i, j, k;
+    int width, height;
+    int bmp_row_bytes;
+    uint16_t color_16bit;
+    
+    BYTE red, green, blue;
+    BYTE gray;
+    BITMAPFILEHEADER bitHead;
+    BITMAPINFOHEADER bitInfoHead;
+    WORD fileType;
+    
+    unsigned int read_num;
+    unsigned char tmp_name[40];
+    BYTE *bmp_row_buffer = NULL;
+    BYTE *mono_buffer = NULL;
+    BYTE palette[8];
+
+	BYTE pixel;
+    
+    // 将所有需要在后面使用的变量提前声明
+    int byte_idx, bit_idx;
+    int is_white;
+    int color0_is_white, color1_is_white;
+    int col_block, row_pos;
+    int disp_byte_idx, disp_bit_idx;
+    
+    // 获取屏幕类型和尺寸
+    int is_mono_screen = 0;
+    uint16_t screen_width = LCD_GetWidth();
+    uint16_t screen_height = LCD_GetHeight();
+
+	uint16_t color0;
+	uint16_t color1;
+    
+    // 判断是否为单色屏（ST75161）
+    #if (CURRENT_LCD_TYPE == LCD_TYPE_ST75161)
+        is_mono_screen = 1;
+    #endif
+    
+    sprintf((char*)tmp_name, "0:%s", pPath);
+    
+    BMP_DEBUG_PRINTF("Open BMP file: %s\r\n", tmp_name);
+    
+    /* 打开BMP文件 */
+    bmpres = f_open(&bmpfsrc, (char *)tmp_name, FA_OPEN_EXISTING | FA_READ);
+    
+    if(bmpres != FR_OK)
     {
-        // 读取调色板（2个颜色，共8字节）
-        BYTE palette[8];  // 每个颜色4字节（B,G,R,保留）
+        BMP_DEBUG_PRINTF("File open fail! Error: %d\r\n", bmpres);
+        return 1;
+    }
+    
+    /* 读取文件类型标识 */
+    f_read(&bmpfsrc, &fileType, sizeof(WORD), &read_num);
+    
+    if(fileType != 0x4d42)
+    {
+        BMP_DEBUG_PRINTF("Not a BMP file!\r\n");
+        f_close(&bmpfsrc);
+        return 2;
+    }
+    
+    /* 读取BMP文件头 */
+    f_read(&bmpfsrc, &bitHead, sizeof(tagBITMAPFILEHEADER), &read_num);
+    showBmpHead(&bitHead);
+    
+    /* 读取位图信息头 */
+    f_read(&bmpfsrc, &bitInfoHead, sizeof(BITMAPINFOHEADER), &read_num);
+    showBmpInforHead(&bitInfoHead);
+    
+    /* 获取图片尺寸 */
+    width = bitInfoHead.biWidth;
+    height = bitInfoHead.biHeight;
+    
+    BMP_DEBUG_PRINTF("Image size: %dx%d, BitCount: %d\r\n", width, height, bitInfoHead.biBitCount);
+    
+    /* 检查是否超出屏幕范围 */
+    if(usX >= screen_width || usY >= screen_height)
+    {
+        BMP_DEBUG_PRINTF("Position out of screen!\r\n");
+        f_close(&bmpfsrc);
+        return 3;
+    }
+    
+    /* 裁剪超出屏幕的部分 */
+    if(usX + width > screen_width)
+        width = screen_width - usX;
+    if(usY + height > screen_height)
+        height = screen_height - usY;
+    
+    if(width <= 0 || height <= 0)
+    {
+        BMP_DEBUG_PRINTF("Image size invalid!\r\n");
+        f_close(&bmpfsrc);
+        return 4;
+    }
+    
+    /* 设置LCD扫描方向为正常方向 */
+    LCD_SetScanDirection(1);
+    
+    /* 打开显示窗口 */
+    LCD_SetWindow(usX, usY, width, height);
+    
+    /* ==================== 处理1位单色BMP ==================== */
+    if(bitInfoHead.biBitCount == 1)
+    {
+        /* 读取调色板 */
         f_read(&bmpfsrc, palette, 8, &read_num);
         
-        // 单色BMP的数据行字节数计算（每行需4字节对齐）
-        l_width = ((width + 31) / 32) * 4;  // 每行字节数 = ceil(width/8)向上取整到4的倍数
+        /* 计算BMP行字节数（4字节对齐）*/
+        bmp_row_bytes = ((width + 31) / 32) * 4;
         
-        if(l_width > 960) {
-            BMP_DEBUG_PRINTF("Picture too big!\r\n");
-            return;
+        bmp_row_buffer = (BYTE*)malloc(bmp_row_bytes);
+        if(bmp_row_buffer == NULL)
+        {
+            BMP_DEBUG_PRINTF("Memory allocation failed!\r\n");
+            f_close(&bmpfsrc);
+            return 5;
         }
         
-        // 设置显示窗口
-        ILI9341_OpenWindow(usX, usY, width, height);
-        comm_out(macCMD_SetPixel);
+        /* 判断调色板颜色 */
+        color0 = RGB24TORGB16(palette[2], palette[1], palette[0]);
+        color1 = RGB24TORGB16(palette[6], palette[5], palette[4]);
         
-        // 逐行处理（BMP存储是从底向上）
-        for(i = 0; i < height; i++)
+        if(is_mono_screen)
         {
-            // 定位到当前行（BMP底部是第一行）
-            f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * l_width);
+            // 单色屏：使用单色显示模式
+            static BYTE lcd_buffer[3200];
             
-            // 读取一行数据
-            f_read(&bmpfsrc, pColorData, l_width, &read_num);
-            
-            // 将单色数据转换为RGB565并显示
-            for(j = 0; j < width; j++)
+            if(width > 160 || height > 160)
             {
-                // 定位到当前像素所在的位
-                int byte_idx = j / 8;      // 字节索引
-                int bit_idx = 7 - (j % 8); // 位索引（BMP通常高位在前）
+                BMP_DEBUG_PRINTF("Single color screen only support <=160x160!\r\n");
+                free(bmp_row_buffer);
+                f_close(&bmpfsrc);
+                return 6;
+            }
+            
+            memset(lcd_buffer, 0, sizeof(lcd_buffer));
+            
+            // 判断哪个颜色是白色
+            color0_is_white = (palette[0] >= 0x80 && palette[1] >= 0x80 && palette[2] >= 0x80);
+            color1_is_white = (palette[4] >= 0x80 && palette[5] >= 0x80 && palette[6] >= 0x80);
+            
+            for(i = 0; i < height; i++)
+            {
+                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
+                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
                 
-                // 获取该位的值（0或1）
-                BYTE bit = (pColorData[byte_idx] >> bit_idx) & 0x01;
-                
-                // 根据位值选择颜色
-                unsigned short color;
-                if(bit == 1)  // 前景色（通常是白色）
+                for(j = 0; j < width; j++)
                 {
-                    // 从调色板获取实际颜色，或直接使用白色
-                    color = RGB24TORGB16(255, 255, 255);  // 白色
+                    byte_idx = j / 8;
+                    bit_idx = 7 - (j % 8);
+                    pixel = (bmp_row_buffer[byte_idx] >> bit_idx) & 0x01;
+                    
+                    is_white = (pixel == 0) ? color0_is_white : color1_is_white;
+                    col_block = j / 8;
+                    row_pos = i;
+                    
+                    if(!is_white)
+                    {
+                        lcd_buffer[col_block * height + row_pos] |= (1 << bit_idx);
+                    }
+                    else
+                    {
+                        lcd_buffer[col_block * height + row_pos] &= ~(1 << bit_idx);
+                    }
                 }
-                else  // 背景色（通常是黑色）
+            }
+            
+            // 发送到单色屏
+            comm_out(0x30);
+            comm_out(0x15);
+            DATA_WR(0x00);
+            DATA_WR(0x9F);
+            comm_out(0x75);
+            DATA_WR(0x00);
+            DATA_WR(0x9F);
+            comm_out(0x5C);
+            
+            for(i = 0; i < (width + 7) / 8; i++)
+            {
+                for(j = 0; j < height; j++)
                 {
-                    color = RGB24TORGB16(0, 0, 0);  // 黑色
+                    DATA_WR(lcd_buffer[i * height + j]);
                 }
-                
-                ILI9341_Write_Data(color);
             }
         }
-    }else if( bitInfoHead.biBitCount >= 24 )  // 24位或32位真彩色
-	{
-		/* 逐行显示图片（从底向上，因为BMP存储顺序是从下到上）*/
-		for ( i = 0; i < height; i ++ )
-		{
-			/* 移动文件指针到当前行的起始位置
-			 * bfOffBits: 像素数据的起始偏移量
-			 * (height - i - 1): BMP图片存储是倒序的，第一行对应图片最后一行
-			 * l_width: 每行的字节数
-			 */
-			f_lseek ( & bmpfsrc, bitHead .bfOffBits + ( height - i - 1 ) * l_width );	
-			
-			/* 读取一行BMP数据到pColorData缓冲区 */
-			#if 0
-				/* 方法1：逐字节读取（效率最低）*/
-				for(j=0; j< l_width; j++)	 													
-				{                
-					f_read(&bmpfsrc, pColorData+j, 1, &read_num);
-				}            
-				
-			#elif 0	
-				/* 方法2：分两次批量读取（效率中等）*/
-				f_read ( & bmpfsrc, pColorData, l_width / 2, & read_num );		
-				f_read ( & bmpfsrc, pColorData + l_width / 2, l_width / 2, & read_num );
-				
-			#else
-				/* 方法3：一次性批量读取一行数据（效率最高，当前使用）*/
-				f_read ( & bmpfsrc, pColorData, l_width, & read_num );
-				
-			#endif
-			
-			/* 将当前行的每个像素转换为RGB565格式并写入LCD */
-			for(j = 0; j < width; j++)  // 遍历当前行的每个像素
-			{
-				k = j * 3;  // 计算当前像素在缓冲区中的索引（每个像素占3字节：B,G,R）
-				blue = pColorData[k + 2];   // 蓝色分量（BMP存储顺序为BGR）
-				green = pColorData[k + 1];  // 绿色分量
-				red = pColorData[k];        // 红色分量
-				
-				/* 将24位RGB颜色转换为16位RGB565格式并写入LCD显存 */
-				ILI9341_Write_Data ( RGB24TORGB16(red, green, blue));
-				//ILI9341_Write_Data ( blue<<16|green<<8|red);  // 另一种格式（24位RGB，不常用）
-			}            
-		}        
-	}    
-	else  // 不是24位真彩色图片
-	{        
-		BMP_DEBUG_PRINTF("SORRY, THIS PIC IS NOT A 24BITS REAL COLOR");
-		return ;
-	}
-	
-	f_close(&bmpfsrc);  // 关闭BMP文件
+        else
+        {
+            // 彩色屏：直接显示
+            for(i = 0; i < height; i++)
+            {
+                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
+                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
+                
+                for(j = 0; j < width; j++)
+                {
+                    byte_idx = j / 8;
+                    bit_idx = 7 - (j % 8);
+                    pixel = (bmp_row_buffer[byte_idx] >> bit_idx) & 0x01;
+                    
+                    color_16bit = (pixel == 0) ? color0 : color1;
+                    LCD_Write_Data(color_16bit);
+                }
+            }
+        }
+        
+        free(bmp_row_buffer);
+    }
+    
+    /* ==================== 处理24位真彩色BMP ==================== */
+    else if(bitInfoHead.biBitCount == 24)
+    {
+        /* 计算BMP行字节数（4字节对齐）*/
+        bmp_row_bytes = ((width * 24 + 31) / 32) * 4;
+        
+        bmp_row_buffer = (BYTE*)malloc(bmp_row_bytes);
+        if(bmp_row_buffer == NULL)
+        {
+            BMP_DEBUG_PRINTF("Memory allocation failed!\r\n");
+            f_close(&bmpfsrc);
+            return 5;
+        }
+        
+        if(is_mono_screen)
+        {
+            // 单色屏：24位彩色转单色
+            static BYTE lcd_buffer[3200];
+            
+            if(width > 160 || height > 160)
+            {
+                BMP_DEBUG_PRINTF("Single color screen only support <=160x160!\r\n");
+                free(bmp_row_buffer);
+                f_close(&bmpfsrc);
+                return 6;
+            }
+            
+            memset(lcd_buffer, 0, sizeof(lcd_buffer));
+            
+            for(i = 0; i < height; i++)
+            {
+                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
+                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
+                
+                for(j = 0; j < width; j++)
+                {
+                    blue = bmp_row_buffer[j * 3];
+                    green = bmp_row_buffer[j * 3 + 1];
+                    red = bmp_row_buffer[j * 3 + 2];
+                    
+                    // 灰度转换
+                    gray = (red * 77 + green * 150 + blue * 29) / 256;
+                    
+                    col_block = j / 8;
+                    bit_idx = 7 - (j % 8);
+                    row_pos = i;
+                    
+                    if(gray < 128)
+                    {
+                        lcd_buffer[col_block * height + row_pos] |= (1 << bit_idx);
+                    }
+                    else
+                    {
+                        lcd_buffer[col_block * height + row_pos] &= ~(1 << bit_idx);
+                    }
+                }
+            }
+            
+            // 发送到单色屏
+            comm_out(0x30);
+            comm_out(0x15);
+            DATA_WR(0x00);
+            DATA_WR(0x9F);
+            comm_out(0x75);
+            DATA_WR(0x00);
+            DATA_WR(0x9F);
+            comm_out(0x5C);
+            
+            for(i = 0; i < (width + 7) / 8; i++)
+            {
+                for(j = 0; j < height; j++)
+                {
+                    DATA_WR(lcd_buffer[i * height + j]);
+                }
+            }
+        }
+        else
+        {
+            // 彩色屏：直接显示24位彩色
+            for(i = 0; i < height; i++)
+            {
+                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
+                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
+                
+                for(j = 0; j < width; j++)
+                {
+                    blue = bmp_row_buffer[j * 3];
+                    green = bmp_row_buffer[j * 3 + 1];
+                    red = bmp_row_buffer[j * 3 + 2];
+                    
+                    color_16bit = RGB24TORGB16(red, green, blue);
+                    LCD_Write_Data(color_16bit);
+                }
+            }
+        }
+        
+        free(bmp_row_buffer);
+    }
+    
+    /* ==================== 处理16位彩色BMP ==================== */
+    else if(bitInfoHead.biBitCount == 16)
+    {
+        bmp_row_bytes = ((width * 16 + 31) / 32) * 4;
+        bmp_row_buffer = (BYTE*)malloc(bmp_row_bytes);
+        
+        if(bmp_row_buffer == NULL)
+        {
+            BMP_DEBUG_PRINTF("Memory allocation failed!\r\n");
+            f_close(&bmpfsrc);
+            return 5;
+        }
+        
+        if(is_mono_screen)
+        {
+            // 单色屏：16位彩色转单色
+            static BYTE lcd_buffer[3200];
+            
+            if(width > 160 || height > 160)
+            {
+                BMP_DEBUG_PRINTF("Single color screen only support <=160x160!\r\n");
+                free(bmp_row_buffer);
+                f_close(&bmpfsrc);
+                return 6;
+            }
+            
+            memset(lcd_buffer, 0, sizeof(lcd_buffer));
+            
+            for(i = 0; i < height; i++)
+            {
+                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
+                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
+                
+                for(j = 0; j < width; j++)
+                {
+                    uint16_t rgb16 = *(uint16_t*)(&bmp_row_buffer[j * 2]);
+                    red = (rgb16 >> 11) & 0x1F;
+                    green = (rgb16 >> 5) & 0x3F;
+                    blue = rgb16 & 0x1F;
+                    
+                    red = (red * 255) / 31;
+                    green = (green * 255) / 63;
+                    blue = (blue * 255) / 31;
+                    
+                    gray = (red * 77 + green * 150 + blue * 29) / 256;
+                    
+                    col_block = j / 8;
+                    bit_idx = 7 - (j % 8);
+                    row_pos = i;
+                    
+                    if(gray < 128)
+                    {
+                        lcd_buffer[col_block * height + row_pos] |= (1 << bit_idx);
+                    }
+                    else
+                    {
+                        lcd_buffer[col_block * height + row_pos] &= ~(1 << bit_idx);
+                    }
+                }
+            }
+            
+            // 发送到单色屏
+            comm_out(0x30);
+            comm_out(0x15);
+            DATA_WR(0x00);
+            DATA_WR(0x9F);
+            comm_out(0x75);
+            DATA_WR(0x00);
+            DATA_WR(0x9F);
+            comm_out(0x5C);
+            
+            for(i = 0; i < (width + 7) / 8; i++)
+            {
+                for(j = 0; j < height; j++)
+                {
+                    DATA_WR(lcd_buffer[i * height + j]);
+                }
+            }
+        }
+        else
+        {
+            // 彩色屏直接显示
+            for(i = 0; i < height; i++)
+            {
+                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
+                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
+                
+                for(j = 0; j < width; j++)
+                {
+                    color_16bit = *(uint16_t*)(&bmp_row_buffer[j * 2]);
+                    LCD_Write_Data(color_16bit);
+                }
+            }
+        }
+        
+        free(bmp_row_buffer);
+    }
+    
+    else
+    {
+        BMP_DEBUG_PRINTF("Unsupported BMP format: %d-bit\r\n", bitInfoHead.biBitCount);
+        f_close(&bmpfsrc);
+        return 7;
+    }
+    
+    f_close(&bmpfsrc);
+    BMP_DEBUG_PRINTF("BMP display completed!\r\n");
+    
+    return 0;
 }
-
-
-// /**
-//  * @brief  初始化序列帧播放器
-//  * @param  seq 序列帧控制结构体指针
-//  * @param  start 起始帧序号
-//  * @param  end 结束帧序号
-//  * @param  delay 帧延迟(ms)
-//  * @param  loop 是否循环(1:循环, 0:播放一次)
-//  * @retval 无
-//  */
-// void FrameSeq_Init(FrameSequence_t *seq, uint16_t start, uint16_t end, uint16_t delay, uint8_t loop)
-// {
-//     seq->start_index = start;
-//     seq->end_index = end;
-//     seq->current_frame = start;
-//     seq->delay_ms = delay;
-//     seq->loop = loop;
-//     seq->playing = 1;  // 默认启动播放
-// }
-
-// /**
-//  * @brief  设置序列帧文件路径
-//  * @param  seq 序列帧控制结构体指针
-//  * @param  prefix 路径前缀，如 "/" 或 "/animation/"
-//  * @param  format 文件格式，如 ".bmp"
-//  * @retval 无
-//  */
-// void FrameSeq_SetPath(FrameSequence_t *seq, const char *prefix, const char *format)
-// {
-//     strcpy(seq->path_prefix, prefix);
-//     strcpy(seq->file_format, format);
-// }
-
-// /**
-//  * @brief  播放序列帧
-//  * @param  seq 序列帧控制结构体指针
-//  * @param  x 显示X坐标
-//  * @param  y 显示Y坐标
-//  * @retval 无
-//  */
-// void FrameSeq_Play(FrameSequence_t *seq, uint16_t x, uint16_t y)
-// {
-//     seq->playing = 1;
-//     seq->current_frame = seq->start_index;
-    
-//     while(seq->playing)
-//     {
-//         // 构建完整文件名
-//         char full_path[100];
-//         sprintf(full_path, "%s%d%s", seq->path_prefix, seq->current_frame, seq->file_format);
-        
-//         // 显示当前帧
-//         Lcd_Show_bmp(x, y, full_path);
-        
-//         // 延时
-//         vTaskDelay(pdMS_TO_TICKS(seq->delay_ms));
-        
-//         // 更新到下一帧
-//         seq->current_frame++;
-        
-//         // 检查是否播放完
-//         if(seq->current_frame > seq->end_index)
-//         {
-//             if(seq->loop)
-//             {
-//                 seq->current_frame = seq->start_index;  // 循环播放
-//             }
-//             else
-//             {
-//                 seq->playing = 0;  // 停止播放
-//                 break;
-//             }
-//         }
-//     }
-// }
-
-// /**
-//  * @brief  停止序列帧播放
-//  * @param  seq 序列帧控制结构体指针
-//  * @retval 无
-//  */
-// void FrameSeq_Stop(FrameSequence_t *seq)
-// {
-//     seq->playing = 0;
-// }
-
-// /**
-//  * @brief  更新序列帧（非阻塞方式，需要在主循环或任务中调用）
-//  * @param  seq 序列帧控制结构体指针
-//  * @param  x 显示X坐标
-//  * @param  y 显示Y坐标
-//  * @retval 1:正在播放, 0:播放完成
-//  */
-// uint8_t FrameSeq_Update(FrameSequence_t *seq, uint16_t x, uint16_t y)
-// {
-//     static uint32_t last_time = 0;
-//     uint32_t current_time = xTaskGetTickCount();
-    
-//     if(!seq->playing)
-//         return 0;
-    
-//     // 检查是否需要更新下一帧
-//     if((current_time - last_time) >= pdMS_TO_TICKS(seq->delay_ms))
-//     {
-//         // 构建完整文件名
-//         char full_path[100];
-//         sprintf(full_path, "%s%d%s", seq->path_prefix, seq->current_frame, seq->file_format);
-        
-//         // 显示当前帧
-//         Lcd_Show_bmp(x, y, full_path);
-        
-//         // 更新到下一帧
-//         seq->current_frame++;
-        
-//         // 检查是否播放完
-//         if(seq->current_frame > seq->end_index)
-//         {
-//             if(seq->loop)
-//             {
-//                 seq->current_frame = seq->start_index;  // 循环播放
-//             }
-//             else
-//             {
-//                 seq->playing = 0;  // 停止播放
-//                 return 0;
-//             }
-//         }
-        
-//         last_time = current_time;
-//     }
-    
-//     return 1;
-// }

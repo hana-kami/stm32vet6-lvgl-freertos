@@ -29,6 +29,11 @@
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\Libraries\FWlib\inc\stm32f10x_usart.h
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\Libraries\FWlib\inc\misc.h
-..\..\output\bsp_xpt2046_lcd.o: ..\..\User\BSP\bsp_ili9341_lcd.h
+..\..\output\bsp_xpt2046_lcd.o: ..\..\User\BSP\bsp_lcd.h
 ..\..\output\bsp_xpt2046_lcd.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+..\..\output\bsp_xpt2046_lcd.o: ..\..\User\BSP\bsp_lcd_config.h
+..\..\output\bsp_xpt2046_lcd.o: ..\..\User\BSP\bsp_st75161_lcd.h
+..\..\output\bsp_xpt2046_lcd.o: ..\..\User\BSP\bsp_sdfs_app.h
+..\..\output\bsp_xpt2046_lcd.o: ..\..\User\ff9\diskio.h
+..\..\output\bsp_xpt2046_lcd.o: ..\..\User\ff9\integer.h
 ..\..\output\bsp_xpt2046_lcd.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h

@@ -32,7 +32,8 @@
 ..\..\output\main.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 ..\..\output\main.o: ..\..\User\BSP\bsp_key.h
 ..\..\output\main.o: ..\..\User\BSP\bsp_lcd.h
-..\..\output\main.o: ..\..\User\BSP\bsp_ili9341_lcd.h
+..\..\output\main.o: ..\..\User\BSP\bsp_lcd_config.h
+..\..\output\main.o: ..\..\User\BSP\bsp_st75161_lcd.h
 ..\..\output\main.o: ..\..\User\BSP\bsp_sdfs_app.h
 ..\..\output\main.o: ..\..\User\ff9\diskio.h
 ..\..\output\main.o: ..\..\User\ff9\integer.h

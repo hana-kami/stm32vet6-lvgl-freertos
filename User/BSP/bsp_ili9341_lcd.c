@@ -1,7 +1,9 @@
 #include "bsp_ili9341_lcd.h"
-#include "ascii.h"	
+#include "bsp_lcd_config.h"
 //#include "pic1.h"	
+#if (CURRENT_LCD_TYPE == LCD_TYPE_ILI9341)
 
+#include "ascii.h"	
 
 static void                   ILI9341_Delay               ( __IO uint32_t nCount );
 static void                   ILI9341_GPIO_Config         ( void );
@@ -1110,3 +1112,5 @@ void ILI9341_LVGL_Flush(uint16_t usX, uint16_t usY, uint16_t usWidth, uint16_t u
         *(__IO uint16_t *)(macFSMC_Addr_ILI9341_DATA) = pColors[i];
     }
 }
+
+#endif

@@ -36,4 +36,8 @@
 ..\..\output\bsp_bmp.o: ..\..\User\ff9\ff.h
 ..\..\output\bsp_bmp.o: ..\..\User\ff9\integer.h
 ..\..\output\bsp_bmp.o: ..\..\User\ff9\ffconf.h
-..\..\output\bsp_bmp.o: ..\..\User\BSP\bsp_ili9341_lcd.h
+..\..\output\bsp_bmp.o: ..\..\User\BSP\bsp_lcd.h
+..\..\output\bsp_bmp.o: ..\..\User\BSP\bsp_lcd_config.h
+..\..\output\bsp_bmp.o: ..\..\User\BSP\bsp_st75161_lcd.h
+..\..\output\bsp_bmp.o: ..\..\User\BSP\bsp_sdfs_app.h
+..\..\output\bsp_bmp.o: ..\..\User\ff9\diskio.h

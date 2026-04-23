@@ -158,11 +158,7 @@ typedef struct {
 
 // 全局序列帧播放器实例
 static FrameSequence_t g_frame_seq;
-
-void Lcd_show_bmp(uint16_t x, uint16_t y, uint8_t *pic_name);
-
-// 函数声明
-void Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath);
+uint8_t Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath);
 void FrameSeq_Init(FrameSequence_t *seq, uint16_t start, uint16_t end, uint16_t delay, uint8_t loop);
 void FrameSeq_SetPath(FrameSequence_t *seq, const char *prefix, const char *format);
 void FrameSeq_Play(FrameSequence_t *seq, uint16_t x, uint16_t y);
