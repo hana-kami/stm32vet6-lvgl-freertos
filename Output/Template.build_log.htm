@@ -27,14 +27,18 @@ Project File Date:  04/22/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
 Build target '��ʾBMP'
-compiling list.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\src\list.c: 1 warning, 0 errors
 compiling croutine.c...
 ..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
   #endif /* FREERTOS_CONFIG_H */
 ..\..\FreeRTOS\src\croutine.c: 1 warning, 0 errors
+compiling heap_4.c...
+..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\portable\heap_4.c: 1 warning, 0 errors
+compiling list.c...
+..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\src\list.c: 1 warning, 0 errors
 compiling timers.c...
 ..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
   #endif /* FREERTOS_CONFIG_H */
@@ -43,10 +47,6 @@ compiling queue.c...
 ..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
   #endif /* FREERTOS_CONFIG_H */
 ..\..\FreeRTOS\src\queue.c: 1 warning, 0 errors
-compiling heap_4.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\portable\heap_4.c: 1 warning, 0 errors
 compiling event_groups.c...
 ..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
   #endif /* FREERTOS_CONFIG_H */
@@ -55,10 +55,6 @@ compiling tasks.c...
 ..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
   #endif /* FREERTOS_CONFIG_H */
 ..\..\FreeRTOS\src\tasks.c: 1 warning, 0 errors
-compiling port.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\portable\port.c: 1 warning, 0 errors
 compiling main.c...
 ..\..\User\BSP\bsp_key.h(46): warning:  #1-D: last line of file ends without a newline
   #endif /* __BSP_KEY_H */
@@ -68,15 +64,13 @@ compiling main.c...
   #endif /* __TEST_FRAMEWORK_H */
 ..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
   #endif /* FREERTOS_CONFIG_H */
-..\..\User\main.c(110): warning:  #1-D: last line of file ends without a newline
+..\..\User\main.c(113): warning:  #1-D: last line of file ends without a newline
   }
-..\..\User\main.c(34): warning:  #177-D: variable "key"  was declared but never referenced
-      uint8_t key;
-..\..\User\main.c(36): warning:  #177-D: variable "last_auto_time"  was declared but never referenced
-      uint32_t last_auto_time = 0;
-..\..\User\main.c(37): warning:  #177-D: variable "last_loop_time"  was declared but never referenced
-      uint32_t last_loop_time = 0;
-..\..\User\main.c: 8 warnings, 0 errors
+..\..\User\main.c: 5 warnings, 0 errors
+compiling port.c...
+..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\portable\port.c: 1 warning, 0 errors
 compiling test_framework.c...
 ..\..\User\test_framework.h(37): warning:  #1-D: last line of file ends without a newline
   #endif /* __TEST_FRAMEWORK_H */
@@ -86,19 +80,21 @@ compiling test_framework.c...
   #endif /* __BSP_LCD_H */
 ..\..\User\BSP\bmp_browser.h(11): warning:  #1-D: last line of file ends without a newline
   #endif
-..\..\User\test_framework.c(589): warning:  #1-D: last line of file ends without a newline
+..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\User\test_framework.c(610): warning:  #1-D: last line of file ends without a newline
   }
-..\..\User\test_framework.c(48): warning:  #550-D: variable "g_test_initialized"  was set but never used
+..\..\User\test_framework.c(50): warning:  #550-D: variable "g_test_initialized"  was set but never used
   static uint8_t g_test_initialized = 0;  // 标记当前测试是否已初始化
-..\..\User\test_framework.c(93): warning:  #177-D: function "StartDelay"  was declared but never referenced
+..\..\User\test_framework.c(96): warning:  #177-D: function "StartDelay"  was declared but never referenced
   static void StartDelay(uint32_t ms)
-..\..\User\test_framework.c(101): warning:  #177-D: function "IsDelayComplete"  was declared but never referenced
+..\..\User\test_framework.c(104): warning:  #177-D: function "IsDelayComplete"  was declared but never referenced
   static uint8_t IsDelayComplete(void)
-..\..\User\test_framework.c: 8 warnings, 0 errors
+..\..\User\test_framework.c: 9 warnings, 0 errors
 linking...
-Program Size: Code=24092 RO-data=177472 RW-data=272 ZI-data=23784  
+Program Size: Code=21970 RO-data=177474 RW-data=236 ZI-data=8420  
 FromELF: creating hex file...
-"..\..\Output\Template.axf" - 0 Error(s), 24 Warning(s).
+"..\..\Output\Template.axf" - 0 Error(s), 22 Warning(s).
 
 <h2>Software Packages used:</h2>
 

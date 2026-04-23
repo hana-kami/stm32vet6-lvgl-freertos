@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "FreeRTOSConfig.h" 
+
 #if (USE_FREERTOS == 1)
     #include "FreeRTOS.h"
     #include "task.h"
@@ -60,6 +62,7 @@ static const uint16_t g_colors[] = {
 #if (USE_FREERTOS == 1)
     static TaskHandle_t g_key_task_handle = NULL;
     static TaskHandle_t g_auto_task_handle = NULL;
+    static TaskHandle_t g_update_task_handle = NULL;
 #endif
 
 /* ==================== 辅助函数 ==================== */
@@ -444,10 +447,25 @@ void RunCurrentTest(void)
 }
 
 #if (USE_FREERTOS == 1)
+// 刷新任务
+static void TestFramework_Update_Task(void *pvParameters)
+{
+    
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xFrequency = pdMS_TO_TICKS(50);  // 每50ms更新一次
+    LCD_Clear(LCD_COLOR_GREEN);
+    
+    while(1) {
+        TestFramework_Update();
+        // 延迟固定时间
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    }
+}
 // FreeRTOS 按键任务
 static void KeyTask(void *pvParameters)
 {
     uint8_t key;
+    LCD_Clear(LCD_COLOR_GREEN);
     while(1) {
         key = Key_Scan();
         if(key != KEY_NONE) {
@@ -473,6 +491,7 @@ static void KeyTask(void *pvParameters)
 static void AutoTask(void *pvParameters)
 {
     uint8_t auto_counter = 0;
+    LCD_Clear(LCD_COLOR_GREEN);
     while(1) {
         if(g_current_mode == TEST_MODE_AUTO) {
             auto_counter++;
@@ -506,10 +525,12 @@ void TestFramework_Init(void)
 void TestFramework_Run(void)
 {
 #if (USE_FREERTOS == 1)
-    xTaskCreate(KeyTask, "KeyTask", 256, NULL, 2, &g_key_task_handle);
-    xTaskCreate(AutoTask, "AutoTask", 256, NULL, 1, &g_auto_task_handle);
+    xTaskCreate(KeyTask, "KeyTask", 512, NULL, 2, &g_key_task_handle);
+    xTaskCreate(AutoTask, "AutoTask", 512, NULL, 1, &g_auto_task_handle);
+    xTaskCreate(TestFramework_Update_Task, "TestFramework_Update_Task", 512, NULL, 3, &g_update_task_handle);
+#else
+    RunCurrentTest();  // 裸机模式下运行
 #endif
-    RunCurrentTest();
 }
 
 void TestFramework_NextTest(void)

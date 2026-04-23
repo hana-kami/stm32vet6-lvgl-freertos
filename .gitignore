@@ -11,6 +11,7 @@
 /out
 /Debug
 /Objects
+/Output
 
 # eide template
 *.ept

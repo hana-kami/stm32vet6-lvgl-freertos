@@ -43,3 +43,4 @@
 ..\..\output\test_framework.o: ..\..\User\ff9\ffconf.h
 ..\..\output\test_framework.o: ..\..\User\BSP\bsp_sdfs_app.h
 ..\..\output\test_framework.o: ..\..\User\ff9\diskio.h
+..\..\output\test_framework.o: ..\..\User\FreeRTOSConfig.h

@@ -38,12 +38,3 @@
 ..\..\output\main.o: ..\..\User\ff9\integer.h
 ..\..\output\main.o: ..\..\User\test_framework.h
 ..\..\output\main.o: ..\..\User\FreeRTOSConfig.h
-..\..\output\main.o: ..\..\FreeRTOS\src\FreeRTOS.h
-..\..\output\main.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
-..\..\output\main.o: ..\..\FreeRTOS\src\projdefs.h
-..\..\output\main.o: ..\..\FreeRTOS\src\portable.h
-..\..\output\main.o: ..\..\FreeRTOS\src\deprecated_definitions.h
-..\..\output\main.o: ..\..\FreeRTOS\portable\portmacro.h
-..\..\output\main.o: ..\..\FreeRTOS\src\mpu_wrappers.h
-..\..\output\main.o: ..\..\FreeRTOS\src\task.h
-..\..\output\main.o: ..\..\FreeRTOS\src\list.h

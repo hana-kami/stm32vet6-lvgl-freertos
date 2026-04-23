@@ -4,10 +4,13 @@
 #include "bsp_lcd.h"
 #include "bsp_sdfs_app.h"
 #include "test_framework.h"
-#include "FreeRTOSConfig.h" 
-#include "FreeRTOS.h" 
-#include "task.h"
 #include <stdio.h>
+#include "FreeRTOSConfig.h" 
+
+#if (USE_FREERTOS == 1)
+    #include "FreeRTOS.h"
+    #include "task.h"
+#endif
 
 #if (USE_FREERTOS == 0)
 
@@ -32,23 +35,20 @@ static void SysTick_Init(void)
 int main(void)
 {
     uint8_t key;
-	
     uint32_t last_auto_time = 0;
     uint32_t last_loop_time = 0;
+    
     // 基础初始化
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     USART_Config();
     Sd_fs_init();
     
 #if (USE_FREERTOS == 0)
-     SysTick_Init();
+    SysTick_Init();
 #endif
 
     // 测试框架初始化
     TestFramework_Init(); 
-    
-    // 运行第一个测试
-    RunCurrentTest();
     
     printf("========================================\n");
     printf("STM32测试架启动\n");
@@ -57,12 +57,15 @@ int main(void)
     
 #if (USE_FREERTOS == 1)
     // ========== FreeRTOS 模式 ==========
-    TestFramework_Run();  // 创建任务并启动调度器
-    vTaskStartScheduler();  // 启动调度器（不会返回）
+    
+    // 创建任务并启动调度器
+    TestFramework_Run();        // 只创建任务
+    vTaskStartScheduler();      // 启动调度器（不会返回）
     while(1);
     
 #else
     // ========== 裸机模式 ==========
+    RunCurrentTest();  // 运行第一个测试
     
     while(1)
     {
@@ -73,10 +76,10 @@ int main(void)
         {
             last_loop_time = now;
             
-            // 自动轮播：每 1.2 秒切换一次
+            // 自动轮播：每 3 秒切换一次
             if(TestFramework_GetMode() == TEST_MODE_AUTO)
             {
-                if((now - last_auto_time) >= 3000)  // 1200ms = 1.2秒
+                if((now - last_auto_time) >= 3000)
                 {
                     last_auto_time = now;
                     TestFramework_NextTest();
@@ -88,7 +91,7 @@ int main(void)
             switch(key) {
                 case KEY0_PRESS:
                     TestFramework_PrevTest();
-                    last_auto_time = now;  // 重置计时
+                    last_auto_time = now;
                     break;
                 case KEY1_PRESS:
                     TestFramework_NextTest();
