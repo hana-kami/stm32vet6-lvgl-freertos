@@ -7,13 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "FreeRTOSConfig.h" 
-
-#if (USE_FREERTOS == 1)
-    #include "FreeRTOS.h"
-    #include "task.h"
-#endif
-
 /* ==================== 测试项函数声明 ==================== */
 void Test_SolidColor_Init(void);
 void Test_SolidColor_Run(void);
@@ -75,22 +68,6 @@ typedef struct {
 } DelayTimer_t;
 
 static DelayTimer_t g_delay_timer = {0, 0, 0};
-
-#if (USE_FREERTOS == 1)
-    // FreeRTOS 方式获取时间
-    static uint32_t GetTickMs(void)
-    {
-        return xTaskGetTickCount() * portTICK_PERIOD_MS;
-    }
-#else
-
-    // extern volatile uint32_t g_sys_tick;
-    
-    static uint32_t GetTickMs(void)
-    {
-        return 0;
-    }
-#endif
 
 // 启动延时
 static void StartDelay(uint32_t ms)
@@ -453,7 +430,6 @@ static void TestFramework_Update_Task(void *pvParameters)
     
     TickType_t xLastWakeTime = xTaskGetTickCount();
     const TickType_t xFrequency = pdMS_TO_TICKS(50);  // 每50ms更新一次
-    LCD_Clear(LCD_COLOR_GREEN);
     
     while(1) {
         TestFramework_Update();
@@ -465,23 +441,22 @@ static void TestFramework_Update_Task(void *pvParameters)
 static void KeyTask(void *pvParameters)
 {
     uint8_t key;
-    LCD_Clear(LCD_COLOR_GREEN);
+    LCD_Clear(LCD_COLOR_GRAY);
     while(1) {
         key = Key_Scan();
-        if(key != KEY_NONE) {
-            if(g_current_test == 8) {
-                switch(key) {
-                    case KEY0_PRESS: BMP_Browser_Prev(); break;
-                    case KEY2_PRESS: BMP_Browser_Next(); break;
-                    case KEY1_PRESS: TestFramework_SwitchMode(); break;
-                }
-            } else {
-                switch(key) {
-                    case KEY0_PRESS: TestFramework_PrevTest(); break;
-                    case KEY1_PRESS: TestFramework_SwitchMode(); break;
-                    case KEY2_PRESS: TestFramework_NextTest(); break;
-                }
-            }
+        switch(key) {
+            case KEY0_PRESS:
+                TestFramework_PrevTest();
+                break;
+            case KEY1_PRESS:
+                TestFramework_NextTest();
+                break;
+            case KEY01_COMBINATION:
+                if(TestFramework_GetMode() == TEST_MODE_AUTO)
+                    TestFramework_SetMode(TEST_MODE_MANUAL);
+                else
+                    TestFramework_SetMode(TEST_MODE_AUTO);
+                break;
         }
         vTaskDelay(pdMS_TO_TICKS(20));
     }
@@ -491,7 +466,7 @@ static void KeyTask(void *pvParameters)
 static void AutoTask(void *pvParameters)
 {
     uint8_t auto_counter = 0;
-    LCD_Clear(LCD_COLOR_GREEN);
+    LCD_Clear(LCD_COLOR_BLUE);
     while(1) {
         if(g_current_mode == TEST_MODE_AUTO) {
             auto_counter++;
@@ -525,9 +500,9 @@ void TestFramework_Init(void)
 void TestFramework_Run(void)
 {
 #if (USE_FREERTOS == 1)
-    xTaskCreate(KeyTask, "KeyTask", 512, NULL, 2, &g_key_task_handle);
-    xTaskCreate(AutoTask, "AutoTask", 512, NULL, 1, &g_auto_task_handle);
-    xTaskCreate(TestFramework_Update_Task, "TestFramework_Update_Task", 512, NULL, 3, &g_update_task_handle);
+    xTaskCreate(KeyTask, "KeyTask", 256, NULL, 2, &g_key_task_handle);      // 1KB
+    xTaskCreate(AutoTask, "AutoTask", 256, NULL, 1, &g_auto_task_handle);    // 768字节
+    xTaskCreate(TestFramework_Update_Task, "UpdateTask", 512, NULL, 3, &g_update_task_handle); // 2KB
 #else
     RunCurrentTest();  // 裸机模式下运行
 #endif

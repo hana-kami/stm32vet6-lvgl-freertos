@@ -1,7 +1,6 @@
 ..\..\output\test_framework.o: ..\..\User\test_framework.c
 ..\..\output\test_framework.o: ..\..\User\test_framework.h
 ..\..\output\test_framework.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
-..\..\output\test_framework.o: ..\..\User\BSP\bsp_key.h
 ..\..\output\test_framework.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\test_framework.o: ..\..\Libraries\CMSIS\core_cm3.h
 ..\..\output\test_framework.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
@@ -30,11 +29,22 @@
 ..\..\output\test_framework.o: ..\..\Libraries\FWlib\inc\stm32f10x_usart.h
 ..\..\output\test_framework.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\test_framework.o: ..\..\Libraries\FWlib\inc\misc.h
+..\..\output\test_framework.o: ..\..\FreeRTOS\src\FreeRTOS.h
+..\..\output\test_framework.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+..\..\output\test_framework.o: ..\..\User\FreeRTOSConfig.h
+..\..\output\test_framework.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+..\..\output\test_framework.o: ..\..\FreeRTOS\src\projdefs.h
+..\..\output\test_framework.o: ..\..\FreeRTOS\src\portable.h
+..\..\output\test_framework.o: ..\..\FreeRTOS\src\deprecated_definitions.h
+..\..\output\test_framework.o: ..\..\FreeRTOS\portable\portmacro.h
+..\..\output\test_framework.o: ..\..\FreeRTOS\src\mpu_wrappers.h
+..\..\output\test_framework.o: ..\..\FreeRTOS\src\task.h
+..\..\output\test_framework.o: ..\..\FreeRTOS\src\list.h
+..\..\output\test_framework.o: ..\..\User\BSP\bsp_key.h
 ..\..\output\test_framework.o: ..\..\User\BSP\bsp_lcd.h
 ..\..\output\test_framework.o: ..\..\User\BSP\bsp_ili9341_lcd.h
 ..\..\output\test_framework.o: ..\..\User\BSP\bsp_bmp.h
 ..\..\output\test_framework.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
-..\..\output\test_framework.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 ..\..\output\test_framework.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
 ..\..\output\test_framework.o: C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
 ..\..\output\test_framework.o: ..\..\User\BSP\bmp_browser.h
@@ -43,4 +53,3 @@
 ..\..\output\test_framework.o: ..\..\User\ff9\ffconf.h
 ..\..\output\test_framework.o: ..\..\User\BSP\bsp_sdfs_app.h
 ..\..\output\test_framework.o: ..\..\User\ff9\diskio.h
-..\..\output\test_framework.o: ..\..\User\FreeRTOSConfig.h

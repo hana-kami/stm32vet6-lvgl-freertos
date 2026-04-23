@@ -70,11 +70,6 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
-#ifndef USE_FREERTOS
-    #define USE_FREERTOS 0
-#endif
-
-
 #include <stdio.h>
 
 
@@ -159,7 +154,7 @@
 /* 支持静态内存分配（暂时不需要，设为0）*/
 #define configSUPPORT_STATIC_ALLOCATION            0					
 /* 系统总堆大小（单位：字节）STM32F103根据实际RAM调整 */
-#define configTOTAL_HEAP_SIZE                      ((size_t)(25  * 1024))    
+#define configTOTAL_HEAP_SIZE                      ((size_t)(35  * 1024))    
 
 
 /***************************************************************
@@ -180,7 +175,7 @@
  * 1:使用方法1（较简单，在任务切换时检测）
  * 2:使用方法2（较可靠，在任务切换时检测并填充特定值）
  */
-#define configCHECK_FOR_STACK_OVERFLOW             0   
+#define configCHECK_FOR_STACK_OVERFLOW             0  
 
 
 /********************************************************************

@@ -28,8 +28,6 @@
 #include "bsp_xpt2046_lcd.h"
 #include "bsp_sdio_sdcard.h"
 
-
-
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
   */

@@ -27,52 +27,121 @@ Project File Date:  04/22/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Users\wzt\AppData\Local\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
 Build target '��ʾBMP'
-compiling croutine.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\src\croutine.c: 1 warning, 0 errors
-compiling heap_4.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\portable\heap_4.c: 1 warning, 0 errors
-compiling list.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\src\list.c: 1 warning, 0 errors
-compiling timers.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\src\timers.c: 1 warning, 0 errors
-compiling queue.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\src\queue.c: 1 warning, 0 errors
-compiling event_groups.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\src\event_groups.c: 1 warning, 0 errors
-compiling tasks.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\src\tasks.c: 1 warning, 0 errors
+compiling stm32f10x_dbgmcu.c...
+compiling stm32f10x_crc.c...
+compiling stm32f10x_dma.c...
+compiling misc.c...
+compiling stm32f10x_exti.c...
+compiling stm32f10x_bkp.c...
+compiling stm32f10x_can.c...
+compiling stm32f10x_adc.c...
+compiling stm32f10x_dac.c...
+compiling stm32f10x_cec.c...
+compiling system_stm32f10x.c...
+compiling stm32f10x_fsmc.c...
+compiling stm32f10x_flash.c...
+compiling stm32f10x_gpio.c...
+compiling stm32f10x_iwdg.c...
+compiling stm32f10x_pwr.c...
+compiling stm32f10x_i2c.c...
+compiling stm32f10x_rtc.c...
+compiling stm32f10x_rcc.c...
+compiling stm32f10x_sdio.c...
+compiling stm32f10x_spi.c...
+compiling stm32f10x_tim.c...
+compiling stm32f10x_usart.c...
+compiling stm32f10x_wwdg.c...
+compiling bsp_key.c...
+..\..\User\BSP\bsp_key.h(46): warning:  #1-D: last line of file ends without a newline
+  #endif /* __BSP_KEY_H */
+..\..\User\BSP\bsp_key.c(89): warning:  #1-D: last line of file ends without a newline
+  }
+..\..\User\BSP\bsp_key.c: 2 warnings, 0 errors
+compiling bsp_exti.c...
+..\..\User\BSP\bsp_exti.c(120): warning:  #1-D: last line of file ends without a newline
+  /*********************************************END OF FILE**********************/
+..\..\User\BSP\bsp_exti.c: 1 warning, 0 errors
+compiling bsp_lcd.c...
+..\..\User\BSP\bsp_lcd.h(224): warning:  #1-D: last line of file ends without a newline
+  #endif /* __BSP_LCD_H */
+..\..\User\BSP\bsp_lcd.c(253): warning:  #1-D: last line of file ends without a newline
+  }
+..\..\User\BSP\bsp_lcd.c(8): warning:  #177-D: variable "g_lcd_direction"  was declared but never referenced
+  static uint8_t g_lcd_direction = LCD_DIRECTION;
+..\..\User\BSP\bsp_lcd.c: 3 warnings, 0 errors
+compiling stm32f10x_it.c...
+..\..\User\stm32f10x_it.c(132): warning:  #223-D: function "xPortSysTickHandler" declared implicitly
+              xPortSysTickHandler();    
+..\..\User\stm32f10x_it.c: 1 warning, 0 errors
+compiling bmp_browser.c...
+..\..\User\BSP\bmp_browser.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\BSP\bmp_browser.c(123): warning:  #1-D: last line of file ends without a newline
+  }
+..\..\User\BSP\bmp_browser.c(9): warning:  #177-D: variable "g_bmp_dir"  was declared but never referenced
+  static DIR g_bmp_dir;
+..\..\User\BSP\bmp_browser.c(11): warning:  #177-D: variable "g_total_count"  was declared but never referenced
+  static uint16_t g_total_count = 0;
+..\..\User\BSP\bmp_browser.c: 4 warnings, 0 errors
 compiling main.c...
 ..\..\User\BSP\bsp_key.h(46): warning:  #1-D: last line of file ends without a newline
   #endif /* __BSP_KEY_H */
 ..\..\User\BSP\bsp_lcd.h(224): warning:  #1-D: last line of file ends without a newline
   #endif /* __BSP_LCD_H */
-..\..\User\test_framework.h(37): warning:  #1-D: last line of file ends without a newline
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\User\test_framework.h(59): warning:  #1-D: last line of file ends without a newline
   #endif /* __TEST_FRAMEWORK_H */
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\User\main.c(113): warning:  #1-D: last line of file ends without a newline
+..\..\User\main.c(106): warning:  #1-D: last line of file ends without a newline
   }
-..\..\User\main.c: 5 warnings, 0 errors
-compiling port.c...
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
+..\..\User\main.c(29): warning:  #177-D: variable "key"  was declared but never referenced
+      uint8_t key;
+..\..\User\main.c(30): warning:  #177-D: variable "last_auto_time"  was declared but never referenced
+      uint32_t last_auto_time = 0;
+..\..\User\main.c(31): warning:  #177-D: variable "last_loop_time"  was declared but never referenced
+      uint32_t last_loop_time = 0;
+..\..\User\main.c: 8 warnings, 0 errors
+compiling bsp_sdfs_app.c...
+compiling bsp_bmp.c...
+..\..\User\BSP\bsp_bmp.c(297): warning:  #223-D: function "comm_out" declared implicitly
+  	comm_out ( macCMD_SetPixel ); 
+..\..\User\BSP\bsp_bmp.c(462): warning:  #223-D: function "comm_out" declared implicitly
+  	comm_out ( macCMD_SetPixel );  // 发送写像素命令，准备写入图片数�?
+..\..\User\BSP\bsp_bmp.c: 2 warnings, 0 errors
+compiling bsp_ili9341_lcd.c...
+..\..\User\BSP\bsp_ili9341_lcd.c(791): warning:  #223-D: function "GetGBKCode_from_sd" declared implicitly
+      macGetGBKCode ( ucBuffer, usChar );	// 取字模数�?
+..\..\User\BSP\bsp_ili9341_lcd.c(1070): warning:  #186-D: pointless comparison of unsigned integer with zero
+      for(k = 0; k < (320 % 32); k++)
+..\..\User\BSP\bsp_ili9341_lcd.c: 2 warnings, 0 errors
+compiling bsp_usart.c...
+compiling croutine.c...
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
   #endif /* FREERTOS_CONFIG_H */
-..\..\FreeRTOS\portable\port.c: 1 warning, 0 errors
+..\..\FreeRTOS\src\croutine.c: 1 warning, 0 errors
+compiling bsp_usart1.c...
+..\..\User\BSP\bsp_usart1.c(115): warning:  #1-D: last line of file ends without a newline
+  /*********************************************END OF FILE**********************/
+..\..\User\BSP\bsp_usart1.c: 1 warning, 0 errors
+compiling bsp_sdio_sdcard.c...
+compiling bsp_xpt2046_lcd.c...
+compiling list.c...
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\src\list.c: 1 warning, 0 errors
+compiling event_groups.c...
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\src\event_groups.c: 1 warning, 0 errors
+compiling diskio.c...
+compiling queue.c...
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\src\queue.c: 1 warning, 0 errors
 compiling test_framework.c...
-..\..\User\test_framework.h(37): warning:  #1-D: last line of file ends without a newline
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\User\test_framework.h(59): warning:  #1-D: last line of file ends without a newline
   #endif /* __TEST_FRAMEWORK_H */
 ..\..\User\BSP\bsp_key.h(46): warning:  #1-D: last line of file ends without a newline
   #endif /* __BSP_KEY_H */
@@ -80,21 +149,35 @@ compiling test_framework.c...
   #endif /* __BSP_LCD_H */
 ..\..\User\BSP\bmp_browser.h(11): warning:  #1-D: last line of file ends without a newline
   #endif
-..\..\User\FreeRTOSConfig.h(271): warning:  #1-D: last line of file ends without a newline
-  #endif /* FREERTOS_CONFIG_H */
-..\..\User\test_framework.c(610): warning:  #1-D: last line of file ends without a newline
+..\..\User\test_framework.c(585): warning:  #1-D: last line of file ends without a newline
   }
-..\..\User\test_framework.c(50): warning:  #550-D: variable "g_test_initialized"  was set but never used
+..\..\User\test_framework.c(43): warning:  #550-D: variable "g_test_initialized"  was set but never used
   static uint8_t g_test_initialized = 0;  // 标记当前测试是否已初始化
-..\..\User\test_framework.c(96): warning:  #177-D: function "StartDelay"  was declared but never referenced
+..\..\User\test_framework.c(73): warning:  #177-D: function "StartDelay"  was declared but never referenced
   static void StartDelay(uint32_t ms)
-..\..\User\test_framework.c(104): warning:  #177-D: function "IsDelayComplete"  was declared but never referenced
+..\..\User\test_framework.c(81): warning:  #177-D: function "IsDelayComplete"  was declared but never referenced
   static uint8_t IsDelayComplete(void)
 ..\..\User\test_framework.c: 9 warnings, 0 errors
+compiling timers.c...
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\src\timers.c: 1 warning, 0 errors
+compiling heap_4.c...
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\portable\heap_4.c: 1 warning, 0 errors
+compiling tasks.c...
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\src\tasks.c: 1 warning, 0 errors
+compiling port.c...
+..\..\User\FreeRTOSConfig.h(266): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\FreeRTOS\portable\port.c: 1 warning, 0 errors
 linking...
-Program Size: Code=21970 RO-data=177474 RW-data=236 ZI-data=8420  
+Program Size: Code=25608 RO-data=177472 RW-data=288 ZI-data=44264  
 FromELF: creating hex file...
-"..\..\Output\Template.axf" - 0 Error(s), 22 Warning(s).
+"..\..\Output\Template.axf" - 0 Error(s), 41 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -117,7 +200,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE@6.1.1
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

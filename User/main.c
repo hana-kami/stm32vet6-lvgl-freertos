@@ -1,11 +1,10 @@
 #include "stm32f10x.h"
-#include "bsp_usart.h"
+#include "bsp_usart1.h"
 #include "bsp_key.h"
 #include "bsp_lcd.h"
 #include "bsp_sdfs_app.h"
 #include "test_framework.h"
-#include <stdio.h>
-#include "FreeRTOSConfig.h" 
+#include <stdio.h> 
 
 #if (USE_FREERTOS == 1)
     #include "FreeRTOS.h"
@@ -13,13 +12,6 @@
 #endif
 
 #if (USE_FREERTOS == 0)
-
-extern volatile uint32_t g_sys_tick;
-
-static uint32_t GetTickMs(void)
-{
-    return g_sys_tick;
-}
 
 static void SysTick_Init(void)
 {
@@ -40,7 +32,8 @@ int main(void)
     
     // 基础初始化
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-    USART_Config();
+    //USART_Config();
+    USARTx_Config();
     Sd_fs_init();
     
 #if (USE_FREERTOS == 0)
