@@ -125,14 +125,14 @@
 #define ST75161_D7_PIN                   GPIO_Pin_10
 
 /* ==================== 屏幕尺寸定义 ==================== */
-#define macST75161_Default_Max_Width     240     // 默认显示宽度
-#define macST75161_Default_Max_Heigth    320     // 默认显示高度
+#define macST75161_Default_Max_Width     160     // 默认显示宽度
+#define macST75161_Default_Max_Heigth    160     // 默认显示高度
 
 /* ==================== 显示窗口起始位置和尺寸 ==================== */
 #define macST75161_DispWindow_X_Star     0       // 显示窗口起始X坐标
 #define macST75161_DispWindow_Y_Star     0       // 显示窗口起始Y坐标
-#define macST75161_DispWindow_COLUMN     240     // 显示窗口列数（宽度）
-#define macST75161_DispWindow_PAGE       320     // 显示窗口页数（高度）
+#define macST75161_DispWindow_COLUMN     160     // 显示窗口列数（宽度）
+#define macST75161_DispWindow_PAGE       160     // 显示窗口页数（高度）
 
 /* ==================== 字符显示尺寸定义 ==================== */
 #define macWIDTH_EN_CHAR                 8       // 英文字符宽度（像素）

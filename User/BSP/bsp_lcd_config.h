@@ -7,7 +7,7 @@
 #define LCD_TYPE_ST75161          3   // ST75161 单色/灰度LCD屏幕
 
 // 修改这里来切换屏幕类型
-#define CURRENT_LCD_TYPE    LCD_TYPE_ST75161   // 当前使用ST75161屏幕
+#define CURRENT_LCD_TYPE    LCD_TYPE_ILI9341   // 当前使用ST75161屏幕
 
 /* ==================== 颜色转换宏 ==================== */
 /**

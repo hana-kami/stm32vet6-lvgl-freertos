@@ -290,7 +290,7 @@ void Lcd_show_bmp ( uint16_t x, uint16_t y, uint8_t * pic_name )
 	
 	/* 打开一个图片大小的窗口 */
 	LCD_SetWindow(x, y, width, height);
-	
+    LCD_COMMOUT(macCMD_SetPixel);	
 	/* 判断是否为24位真彩色图 */
 	if( bitInfoHead.biBitCount >= 24 )
 	{
@@ -307,7 +307,7 @@ void Lcd_show_bmp ( uint16_t x, uint16_t y, uint8_t * pic_name )
 				blue = pColorData[k+2];
 				green = pColorData[k+1];
 				red = pColorData[k];
-				LCD_DrawPoint(x + j, y + i, RGB24TORGB16(red, green, blue));
+				LCD_Write_Data(RGB24TORGB16(red, green, blue));
 			}            
 		}        
 	}    
@@ -329,8 +329,7 @@ void Lcd_show_bmp ( uint16_t x, uint16_t y, uint8_t * pic_name )
 uint8_t Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
 {
     int i, j, k;
-    int width, height;
-    int bmp_row_bytes;
+    int width, height, l_width;
     uint16_t color_16bit;
     
     BYTE red, green, blue;
@@ -340,29 +339,18 @@ uint8_t Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
     WORD fileType;
     
     unsigned int read_num;
-    unsigned char tmp_name[40];
-    BYTE *bmp_row_buffer = NULL;
-    BYTE *mono_buffer = NULL;
+    unsigned char tmp_name[20];
     BYTE palette[8];
-
-	BYTE pixel;
+    BYTE pixel;
     
-    // 将所有需要在后面使用的变量提前声明
-    int byte_idx, bit_idx;
-    int is_white;
-    int color0_is_white, color1_is_white;
-    int col_block, row_pos;
-    int disp_byte_idx, disp_bit_idx;
-    
-    // 获取屏幕类型和尺寸
+    /* 单色屏相关变量 */
     int is_mono_screen = 0;
     uint16_t screen_width = LCD_GetWidth();
     uint16_t screen_height = LCD_GetHeight();
-
-	uint16_t color0;
-	uint16_t color1;
+    uint16_t color0, color1;
+    int byte_idx, bit_idx;
+    int color0_is_white, color1_is_white;
     
-    // 判断是否为单色屏（ST75161）
     #if (CURRENT_LCD_TYPE == LCD_TYPE_ST75161)
         is_mono_screen = 1;
     #endif
@@ -425,11 +413,12 @@ uint8_t Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
         return 4;
     }
     
-    /* 设置LCD扫描方向为正常方向 */
+    /* 设置LCD扫描方向 */
     LCD_SetScanDirection(1);
     
     /* 打开显示窗口 */
     LCD_SetWindow(usX, usY, width, height);
+    LCD_COMMOUT(macCMD_SetPixel);
     
     /* ==================== 处理1位单色BMP ==================== */
     if(bitInfoHead.biBitCount == 1)
@@ -438,12 +427,11 @@ uint8_t Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
         f_read(&bmpfsrc, palette, 8, &read_num);
         
         /* 计算BMP行字节数（4字节对齐）*/
-        bmp_row_bytes = ((width + 31) / 32) * 4;
+        l_width = ((width + 31) / 32) * 4;
         
-        bmp_row_buffer = (BYTE*)malloc(bmp_row_bytes);
-        if(bmp_row_buffer == NULL)
+        if(l_width > 960)
         {
-            BMP_DEBUG_PRINTF("Memory allocation failed!\r\n");
+            BMP_DEBUG_PRINTF("Buffer too small!\r\n");
             f_close(&bmpfsrc);
             return 5;
         }
@@ -452,287 +440,81 @@ uint8_t Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
         color0 = RGB24TORGB16(palette[2], palette[1], palette[0]);
         color1 = RGB24TORGB16(palette[6], palette[5], palette[4]);
         
-        if(is_mono_screen)
+        /* 一行一行读取并显示 */
+        for(i = 0; i < height; i++)
         {
-            // 单色屏：使用单色显示模式
-            static BYTE lcd_buffer[3200];
+            f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * l_width);
+            f_read(&bmpfsrc, pColorData, l_width, &read_num);
             
-            if(width > 160 || height > 160)
+            for(j = 0; j < width; j++)
             {
-                BMP_DEBUG_PRINTF("Single color screen only support <=160x160!\r\n");
-                free(bmp_row_buffer);
-                f_close(&bmpfsrc);
-                return 6;
-            }
-            
-            memset(lcd_buffer, 0, sizeof(lcd_buffer));
-            
-            // 判断哪个颜色是白色
-            color0_is_white = (palette[0] >= 0x80 && palette[1] >= 0x80 && palette[2] >= 0x80);
-            color1_is_white = (palette[4] >= 0x80 && palette[5] >= 0x80 && palette[6] >= 0x80);
-            
-            for(i = 0; i < height; i++)
-            {
-                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
-                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
+                byte_idx = j / 8;
+                bit_idx = 7 - (j % 8);
+                pixel = (pColorData[byte_idx] >> bit_idx) & 0x01;
                 
-                for(j = 0; j < width; j++)
-                {
-                    byte_idx = j / 8;
-                    bit_idx = 7 - (j % 8);
-                    pixel = (bmp_row_buffer[byte_idx] >> bit_idx) & 0x01;
-                    
-                    is_white = (pixel == 0) ? color0_is_white : color1_is_white;
-                    col_block = j / 8;
-                    row_pos = i;
-                    
-                    if(!is_white)
-                    {
-                        lcd_buffer[col_block * height + row_pos] |= (1 << bit_idx);
-                    }
-                    else
-                    {
-                        lcd_buffer[col_block * height + row_pos] &= ~(1 << bit_idx);
-                    }
-                }
-            }
-            
-            // 发送到单色屏
-            comm_out(0x30);
-            comm_out(0x15);
-            DATA_WR(0x00);
-            DATA_WR(0x9F);
-            comm_out(0x75);
-            DATA_WR(0x00);
-            DATA_WR(0x9F);
-            comm_out(0x5C);
-            
-            for(i = 0; i < (width + 7) / 8; i++)
-            {
-                for(j = 0; j < height; j++)
-                {
-                    DATA_WR(lcd_buffer[i * height + j]);
-                }
+                color_16bit = (pixel == 0) ? color0 : color1;
+                LCD_Write_Data(color_16bit);
             }
         }
-        else
-        {
-            // 彩色屏：直接显示
-            for(i = 0; i < height; i++)
-            {
-                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
-                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
-                
-                for(j = 0; j < width; j++)
-                {
-                    byte_idx = j / 8;
-                    bit_idx = 7 - (j % 8);
-                    pixel = (bmp_row_buffer[byte_idx] >> bit_idx) & 0x01;
-                    
-                    color_16bit = (pixel == 0) ? color0 : color1;
-                    LCD_Write_Data(color_16bit);
-                }
-            }
-        }
-        
-        free(bmp_row_buffer);
     }
     
     /* ==================== 处理24位真彩色BMP ==================== */
     else if(bitInfoHead.biBitCount == 24)
     {
         /* 计算BMP行字节数（4字节对齐）*/
-        bmp_row_bytes = ((width * 24 + 31) / 32) * 4;
+        l_width = ((width * 24 + 31) / 32) * 4;
         
-        bmp_row_buffer = (BYTE*)malloc(bmp_row_bytes);
-        if(bmp_row_buffer == NULL)
+        if(l_width > 960)
         {
-            BMP_DEBUG_PRINTF("Memory allocation failed!\r\n");
+            BMP_DEBUG_PRINTF("Buffer too small! Need %d bytes for width %d\r\n", l_width, width);
             f_close(&bmpfsrc);
             return 5;
         }
         
-        if(is_mono_screen)
+        /* 一行一行读取并显示 */
+        for(i = 0; i < height; i++)
         {
-            // 单色屏：24位彩色转单色
-            static BYTE lcd_buffer[3200];
+            f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * l_width);
+            f_read(&bmpfsrc, pColorData, l_width, &read_num);
             
-            if(width > 160 || height > 160)
+            for(j = 0; j < width; j++)
             {
-                BMP_DEBUG_PRINTF("Single color screen only support <=160x160!\r\n");
-                free(bmp_row_buffer);
-                f_close(&bmpfsrc);
-                return 6;
-            }
-            
-            memset(lcd_buffer, 0, sizeof(lcd_buffer));
-            
-            for(i = 0; i < height; i++)
-            {
-                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
-                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
+                k = j * 3;
+                blue = pColorData[k + 2];
+                green = pColorData[k + 1];
+                red = pColorData[k];
                 
-                for(j = 0; j < width; j++)
-                {
-                    blue = bmp_row_buffer[j * 3];
-                    green = bmp_row_buffer[j * 3 + 1];
-                    red = bmp_row_buffer[j * 3 + 2];
-                    
-                    // 灰度转换
-                    gray = (red * 77 + green * 150 + blue * 29) / 256;
-                    
-                    col_block = j / 8;
-                    bit_idx = 7 - (j % 8);
-                    row_pos = i;
-                    
-                    if(gray < 128)
-                    {
-                        lcd_buffer[col_block * height + row_pos] |= (1 << bit_idx);
-                    }
-                    else
-                    {
-                        lcd_buffer[col_block * height + row_pos] &= ~(1 << bit_idx);
-                    }
-                }
-            }
-            
-            // 发送到单色屏
-            comm_out(0x30);
-            comm_out(0x15);
-            DATA_WR(0x00);
-            DATA_WR(0x9F);
-            comm_out(0x75);
-            DATA_WR(0x00);
-            DATA_WR(0x9F);
-            comm_out(0x5C);
-            
-            for(i = 0; i < (width + 7) / 8; i++)
-            {
-                for(j = 0; j < height; j++)
-                {
-                    DATA_WR(lcd_buffer[i * height + j]);
-                }
+                color_16bit = RGB24TORGB16(red, green, blue);
+                LCD_Write_Data(color_16bit);
             }
         }
-        else
-        {
-            // 彩色屏：直接显示24位彩色
-            for(i = 0; i < height; i++)
-            {
-                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
-                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
-                
-                for(j = 0; j < width; j++)
-                {
-                    blue = bmp_row_buffer[j * 3];
-                    green = bmp_row_buffer[j * 3 + 1];
-                    red = bmp_row_buffer[j * 3 + 2];
-                    
-                    color_16bit = RGB24TORGB16(red, green, blue);
-                    LCD_Write_Data(color_16bit);
-                }
-            }
-        }
-        
-        free(bmp_row_buffer);
     }
     
     /* ==================== 处理16位彩色BMP ==================== */
     else if(bitInfoHead.biBitCount == 16)
     {
-        bmp_row_bytes = ((width * 16 + 31) / 32) * 4;
-        bmp_row_buffer = (BYTE*)malloc(bmp_row_bytes);
+        /* 计算BMP行字节数（4字节对齐）*/
+        l_width = ((width * 16 + 31) / 32) * 4;
         
-        if(bmp_row_buffer == NULL)
+        if(l_width > 960)
         {
-            BMP_DEBUG_PRINTF("Memory allocation failed!\r\n");
+            BMP_DEBUG_PRINTF("Buffer too small! Need %d bytes\r\n", l_width);
             f_close(&bmpfsrc);
             return 5;
         }
         
-        if(is_mono_screen)
+        /* 一行一行读取并显示 */
+        for(i = 0; i < height; i++)
         {
-            // 单色屏：16位彩色转单色
-            static BYTE lcd_buffer[3200];
+            f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * l_width);
+            f_read(&bmpfsrc, pColorData, l_width, &read_num);
             
-            if(width > 160 || height > 160)
+            for(j = 0; j < width; j++)
             {
-                BMP_DEBUG_PRINTF("Single color screen only support <=160x160!\r\n");
-                free(bmp_row_buffer);
-                f_close(&bmpfsrc);
-                return 6;
-            }
-            
-            memset(lcd_buffer, 0, sizeof(lcd_buffer));
-            
-            for(i = 0; i < height; i++)
-            {
-                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
-                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
-                
-                for(j = 0; j < width; j++)
-                {
-                    uint16_t rgb16 = *(uint16_t*)(&bmp_row_buffer[j * 2]);
-                    red = (rgb16 >> 11) & 0x1F;
-                    green = (rgb16 >> 5) & 0x3F;
-                    blue = rgb16 & 0x1F;
-                    
-                    red = (red * 255) / 31;
-                    green = (green * 255) / 63;
-                    blue = (blue * 255) / 31;
-                    
-                    gray = (red * 77 + green * 150 + blue * 29) / 256;
-                    
-                    col_block = j / 8;
-                    bit_idx = 7 - (j % 8);
-                    row_pos = i;
-                    
-                    if(gray < 128)
-                    {
-                        lcd_buffer[col_block * height + row_pos] |= (1 << bit_idx);
-                    }
-                    else
-                    {
-                        lcd_buffer[col_block * height + row_pos] &= ~(1 << bit_idx);
-                    }
-                }
-            }
-            
-            // 发送到单色屏
-            comm_out(0x30);
-            comm_out(0x15);
-            DATA_WR(0x00);
-            DATA_WR(0x9F);
-            comm_out(0x75);
-            DATA_WR(0x00);
-            DATA_WR(0x9F);
-            comm_out(0x5C);
-            
-            for(i = 0; i < (width + 7) / 8; i++)
-            {
-                for(j = 0; j < height; j++)
-                {
-                    DATA_WR(lcd_buffer[i * height + j]);
-                }
+                color_16bit = *(uint16_t*)(&pColorData[j * 2]);
+                LCD_Write_Data(color_16bit);
             }
         }
-        else
-        {
-            // 彩色屏直接显示
-            for(i = 0; i < height; i++)
-            {
-                f_lseek(&bmpfsrc, bitHead.bfOffBits + (height - i - 1) * bmp_row_bytes);
-                f_read(&bmpfsrc, bmp_row_buffer, bmp_row_bytes, &read_num);
-                
-                for(j = 0; j < width; j++)
-                {
-                    color_16bit = *(uint16_t*)(&bmp_row_buffer[j * 2]);
-                    LCD_Write_Data(color_16bit);
-                }
-            }
-        }
-        
-        free(bmp_row_buffer);
     }
     
     else

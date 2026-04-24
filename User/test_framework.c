@@ -364,6 +364,7 @@ void Test_BMPBrowser_Run(void)
     {
         case BMP_STATE_SHOW:
             Lcd_Show_bmp(0, 0, "/1.bmp");
+            // BMP_Browser_Next();
             bmp_state = BMP_STATE_WAIT;
             bmp_start_time = GetTickMs();
             break;

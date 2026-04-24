@@ -53,7 +53,7 @@ int main(void)
     
     // 创建任务并启动调度器
     TestFramework_Run();        // 只创建任务
-    vTaskStartScheduler();      // 启动调度器（不会返回）
+    vTaskStartScheduler();      // 启动调度器
     while(1);
     
 #else

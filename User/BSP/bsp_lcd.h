@@ -87,6 +87,7 @@
     #define LCD_ShowStringMixed     ILI9341_DispString_EN_CH
     #define LCD_SetScanDirection    ILI9341_GramScan
     #define LCD_SetWindow           ILI9341_OpenWindow
+    #define LCD_COMMOUT             comm_out
     #define LCD_BacklightControl(on) ILI9341_BackLed_Control(on?ENABLE:DISABLE)
     #define LCD_ShowGrayPattern     disp_gray
     #define LCD_ShowChessboard9     DISP9W
@@ -111,6 +112,7 @@
     #define LCD_ShowStringMixed     GC9B71_DispString_EN_CH
     #define LCD_SetScanDirection    GC9B71_GramScan
     #define LCD_SetWindow           GC9B71_OpenWindow
+    #define LCD_COMMOUT             comm_out
     #define LCD_BacklightControl(on) GC9B71_BackLed_Control(on?ENABLE:DISABLE)
     #define LCD_ShowGrayPattern     disp_gray
     #define LCD_ShowChessboard9     DispFrame
@@ -134,6 +136,7 @@
     #define LCD_ShowStringMixed     ST75161_DispString_EN_CH
     #define LCD_SetScanDirection    ST75161_GramScan
     #define LCD_SetWindow           ST75161_OpenWindow
+    #define LCD_COMMOUT             comm_out
     #define LCD_BacklightControl(on) ST75161_BackLed_Control(on?ENABLE:DISABLE)
     #define LCD_ShowGrayPattern     disp_gray
     #define LCD_ShowChessboard9     DISP9W      // ST75161使用9宫格图案
