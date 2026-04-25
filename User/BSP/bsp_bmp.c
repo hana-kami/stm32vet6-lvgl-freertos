@@ -286,7 +286,7 @@ void Lcd_show_bmp ( uint16_t x, uint16_t y, uint8_t * pic_name )
 	}
 	
 	/* 设置LCD扫描方向为正常方向 */
-	LCD_SetScanDirection(1);
+	// LCD_SetScanDirection(1);
 	
 	/* 打开一个图片大小的窗口 */
 	LCD_SetWindow(x, y, width, height);
@@ -414,7 +414,7 @@ uint8_t Lcd_Show_bmp(uint16_t usX, uint16_t usY, const char *pPath)
     }
     
     /* 设置LCD扫描方向 */
-    LCD_SetScanDirection(1);
+    // LCD_SetScanDirection(1);
     
     /* 打开显示窗口 */
     LCD_SetWindow(usX, usY, width, height);
